@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>De Waardevolle Tien | Het Rechte Pad College</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://leer.hetrechtepadcollege.nl/apps/de-waardevolle-tien/" />
+    <meta property="og:site_name" content="Het Rechte Pad College" />
+    <meta property="og:locale" content="nl_NL" />
+    <meta property="og:title" content="De Waardevolle Tien | Het Rechte Pad College" />
+    <meta
+      property="og:description"
+      content="Volg jouw ʿibādah (erediensten) in de laatste 10 dagen en nachten van Ramadan en ontdek de Waardevolle Nacht."
+    />
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="De Waardevolle Tien | Het Rechte Pad College" />
+    <meta
+      property="twitter:description"
+      content="Volg jouw ʿibādah (erediensten) in de laatste 10 dagen en nachten van Ramadan en ontdek de Waardevolle Nacht."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Naskh+Arabic:wght@400;700&family=Noto+Sans:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app">
+
+      <!-- ── HERO: branding + voortgang ─────────────────────── -->
+      <header class="hero">
+        <div class="brand-logo-wrap">
+          <img
+            class="brand-logo"
+            src="images/HRPC-logo.png"
+            alt="Het Rechte Pad College logo"
+          />
+        </div>
+        <h1>De Waardevolle Tien</h1>
+        <p class="app-subtitle">"Zoek de Waardevolle Nacht in de laatste tien (nachten) van de Ramadan." (Hadith)</p>
+        <p class="ramadan-day-label" id="ramadan-day-label">Laden…</p>
+
+        <!-- Countdown (zichtbaar vóór dag 21) -->
+        <div class="hero-inset countdown-wrap" id="countdown-card" hidden>
+          <p class="countdown-text" id="countdown-text"></p>
+          <p class="countdown-sub">
+            Met deze app houd je eenvoudig jeʿibādah (erediensten) bij, zodat je doelgericht en bewust het beste uit de laatste tien nachten haalt.
+          </p>
+        </div>
+
+        <!-- Voortgangshart -->
+        <div class="hero-inset progress-wrap" id="progress-card">
+          <div class="heart-container">
+            <svg
+              class="heart-svg"
+              id="progress-heart"
+              viewBox="0 0 32 29.6"
+              aria-label="Voortgangshart"
+              role="img"
+            >
+              <path
+                d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.4,12.4,16,21.2c6.6-8.8,16-11.8,16-21.2C32,3.8,28.2,0,23.6,0z"
+              />
+            </svg>
+          </div>
+          <div class="progress-info">
+            <div class="progress-score-row">
+              <span class="progress-score" id="progress-score">0%</span>
+              <span class="progress-label" id="progress-label">Begin vandaag</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <p class="progress-hint" id="progress-hint">Elke ʿibādah (eredienst) telt!</p>
+          </div>
+        </div>
+      </header>
+
+      <!-- ── GEBEDEN ──────────────────────────────────────────── -->
+      <article class="card">
+        <div class="widget-header">
+          <h2 class="widget-title">🕌 De Vijf Dagelijkse Gebeden</h2>
+          <span class="widget-badge"><span id="prayers-done-count">0</span>/5</span>
+        </div>
+        <div class="prayers-grid" id="prayers-grid" role="group" aria-label="Gebeden vandaag"></div>
+      </article>
+
+      <!-- ── KORANRECITATIE ────────────────────────────────────── -->
+      <article class="card">
+        <div class="widget-header">
+          <h2 class="widget-title">📖 Koranrecitatie</h2>
+        </div>
+        <div class="quran-tracker">
+          <button class="counter-btn" id="quran-minus" aria-label="Minder pagina's">−</button>
+          <div class="quran-display">
+            <span class="quran-value" id="quran-pages">0</span>
+            <span class="quran-unit">pagina's vandaag</span>
+          </div>
+          <button class="counter-btn" id="quran-plus" aria-label="Meer pagina's">+</button>
+        </div>
+      </article>
+
+      <!-- ── SADAQAH + TAHAJJUD ────────────────────────────────── -->
+      <div class="two-col-row">
+        <article class="card">
+          <div class="widget-header">
+            <h2 class="widget-title">💚 Sadaqah (Liefdadigheid)</h2>
+          </div>
+          <button class="toggle-btn" id="sadaqah-btn" aria-pressed="false">
+            <span class="toggle-icon" id="sadaqah-icon">○</span>
+            <span class="toggle-text" id="sadaqah-text">Nog niet gegeven</span>
+          </button>
+        </article>
+        <article class="card">
+          <div class="widget-header">
+            <h2 class="widget-title">🌙 Nachtgebed (Tarāwīḥ/Tahajjud)</h2>
+          </div>
+          <button class="toggle-btn" id="tahajjud-btn" aria-pressed="false">
+            <span class="toggle-icon" id="tahajjud-icon">○</span>
+            <span class="toggle-text" id="tahajjud-text">Nog niet verricht</span>
+          </button>
+        </article>
+      </div>
+
+      <!-- ── EXTRA ʿIBĀDAH ─────────────────────────────────────── -->
+      <article class="card">
+        <div class="widget-header">
+          <h2 class="widget-title">✨ Extra ʿibādah (erediensten)</h2>
+        </div>
+        <div
+          class="extra-grid"
+          id="extra-grid"
+          role="group"
+          aria-label="Extra ibadah vandaag"
+        ></div>
+      </article>
+
+      <!-- ── LAATSTE 10 DAGEN ──────────────────────────────────── -->
+      <article class="card">
+        <div class="widget-header">
+          <h2 class="widget-title">🗓️ Laatste 10 Dagen</h2>
+        </div>
+        <p class="calendar-hint">Tik op een ✦-nacht voor info over Laylatul Qadr</p>
+        <div
+          class="ten-days-grid"
+          id="ten-days-grid"
+          aria-label="Kalender laatste 10 dagen van Ramadan"
+        ></div>
+        <p class="laylah-legend">
+          <span class="legend-star">✦</span> = Mogelijk Laylatul Qadr (oneven nacht)
+        </p>
+      </article>
+
+      <div class="portal-home-wrap">
+        <a class="portal-home-btn" href="../../">← Terug naar Leerportaal</a>
+      </div>
+    </main>
+
+    <!-- ── LAYLATUL QADR DIALOG ──────────────────────────────── -->
+    <dialog id="laylah-dialog" class="laylah-dialog">
+      <article class="dialog-card">
+        <button id="close-laylah" class="close-btn" aria-label="Sluiten">×</button>
+        <div class="dialog-badge">✦ Oneven nacht</div>
+        <h3 id="laylah-night-title">Laylatul Qadr</h3>
+        <p class="dialog-arabic" lang="ar">لَيْلَةُ الْقَدْرِ</p>
+        <div class="dialog-body">
+          <p>
+            Dit is een <strong>oneven nacht</strong> in de laatste 10 dagen van Ramadan — een van
+            de nachten waarop <strong>Laylatul Qadr</strong> kan vallen.
+          </p>
+          <p>
+            Allah zegt in de Koran:
+            <em>"De Nacht van Qadr is beter dan duizend maanden."</em>
+            <span class="source">(97:3)</span>  
+          </p>
+          <p>Benut deze nacht door extra te doen:</p>
+          <ul>
+            <li>🙏🏽 Extra (nacht)gebeden (Tarāwīḥ / Tahajjud)</li>
+            <li>📖 Koranrecitatie</li>
+            <li>🤲🏽 Veel duāʾ maken</li>
+            <li>💚 Sadaqah geven</li>
+            <li>📿 Dzikr doen</li>
+          </ul>
+          <div class="dua-box">
+            <p class="dua-arabic" lang="ar">
+              اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي
+            </p>
+            <p class="dua-latin"><em>Allāhumma innaka ʿafuwwun tuḥibbul-ʿafwa faʿfu ʿannī</em></p>
+            <p class="dua-nl">O Allah, U bent de Alvergevende, U houdt van vergeven, vergeef mij dan.</p>
+            <p class="dua-source">— Hadith</p>
+          </div>
+        </div>
+        <button class="cta-btn" id="close-laylah-bottom">Begrepen — ik ga mijn best doen!</button>
+      </article>
+    </dialog>
+
+    <script src="script.js"></script>
+    <script
+      data-goatcounter="https://hetrechtepadcollege.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
+  </body>
+</html>

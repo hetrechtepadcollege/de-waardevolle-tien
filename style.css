@@ -1,0 +1,764 @@
+:root {
+  --bg-top:    #081a33;
+  --bg-mid:    #0f2d50;
+  --bg-bottom: #0c2642;
+  --card:      #ffffff;
+  --ink:       #16324f;
+  --muted:     #4b607a;
+  --gold:      #d4af37;
+  --gold-light:#e8c84a;
+  --gold-border: rgba(212, 175, 55, 0.28);
+  --shadow:      0 14px 30px rgba(7, 41, 63, 0.16);
+  --shadow-hover:0 18px 34px rgba(7, 41, 63, 0.22);
+  --done-bg:    #e6f4ec;
+  --done-border:rgba(26, 122, 69, 0.4);
+  --done-color: #1a7a45;
+  --heart-orange: #f97316;
+  --heart-red:    #c0392b;
+  --heart-green:  #1a7a45;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Noto Sans", "Noto Naskh Arabic", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 10% 16%, rgba(255, 236, 167, 0.10) 0 2px, transparent 3px),
+    radial-gradient(circle at 26% 10%, rgba(255, 236, 167, 0.12) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 48% 20%, rgba(255, 236, 167, 0.09) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 70% 8%,  rgba(255, 236, 167, 0.11) 0 2px, transparent 3px),
+    radial-gradient(circle at 88% 18%, rgba(255, 236, 167, 0.10) 0 1.5px, transparent 2.5px),
+    linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 50%, var(--bg-bottom) 100%);
+  overflow-x: hidden;
+}
+
+/* ── APP WRAPPER ─────────────────────────────────────── */
+.app {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 28px 20px 48px;
+  display: grid;
+  gap: 18px;
+}
+
+/* ── HERO ────────────────────────────────────────────── */
+.hero {
+  background:
+    radial-gradient(circle at 90% 14%, rgba(212, 175, 55, 0.22), transparent 36%),
+    radial-gradient(circle at 6%  14%, rgba(255, 255, 255, 0.07), transparent 28%),
+    linear-gradient(135deg, #102c52 0%, #1a4270 64%, #112f52 100%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 28px 28px 24px;
+  box-shadow: 0 20px 40px rgba(8, 26, 51, 0.44);
+  animation: floatIn 600ms ease-out;
+  color: #fff;
+  text-align: center;
+}
+
+.brand-logo-wrap {
+  margin-bottom: 18px;
+}
+
+.brand-logo {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+
+h1 {
+  font-family: "Cinzel", serif;
+  font-size: clamp(1.65rem, 5vw, 2.4rem);
+  line-height: 1.15;
+  color: #fff;
+  margin: 0 0 8px;
+  letter-spacing: 0.3px;
+}
+
+.app-subtitle {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin: 0 0 6px;
+}
+
+.ramadan-day-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 18px;
+}
+
+/* ── HERO INSET (voortgang & countdown) ──────────────── */
+.hero-inset {
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 14px 18px;
+  text-align: left;
+}
+
+/* countdown */
+.countdown-wrap {
+  text-align: center;
+}
+
+.countdown-text {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff9dd;
+}
+
+.countdown-sub {
+  margin: 0;
+  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.5;
+}
+
+/* voortgang */
+.progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.heart-container {
+  flex-shrink: 0;
+}
+
+.heart-svg {
+  width: 52px;
+  height: 52px;
+  fill: var(--heart-red);
+  filter: drop-shadow(0 0 7px rgba(192, 57, 43, 0.5));
+  transition: fill 0.7s ease, filter 0.7s ease;
+  animation: heartbeat 1.8s ease-in-out infinite;
+}
+
+.heart-svg.low {
+  fill: var(--heart-orange);
+  filter: drop-shadow(0 0 7px rgba(249, 115, 22, 0.55));
+}
+
+.heart-svg.mid {
+  fill: var(--heart-red);
+  filter: drop-shadow(0 0 7px rgba(192, 57, 43, 0.55));
+}
+
+.heart-svg.high {
+  fill: var(--heart-green);
+  filter: drop-shadow(0 0 10px rgba(26, 122, 69, 0.65));
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14%       { transform: scale(1.12); }
+  28%       { transform: scale(1); }
+  42%       { transform: scale(1.06); }
+  56%       { transform: scale(1); }
+}
+
+.progress-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.progress-score-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.progress-score {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+
+.progress-label {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.progress-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold-light), var(--gold));
+  transition: width 400ms ease, background 700ms ease;
+  width: 0%;
+}
+
+.progress-bar.mid  { background: linear-gradient(90deg, #ef4444, #c0392b); }
+.progress-bar.high { background: linear-gradient(90deg, #22c55e, #1a7a45); }
+
+.progress-hint {
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.52);
+  margin: 0;
+}
+
+/* ── WHITE CARDS ─────────────────────────────────────── */
+.card {
+  background: var(--card);
+  border-radius: 14px;
+  border: 1px solid var(--gold-border);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  animation: rise 500ms ease both;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* ── WIDGET HEADERS ──────────────────────────────────── */
+.widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--gold-border);
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+
+.widget-title {
+  font-family: "Noto Sans", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0;
+}
+
+.widget-badge {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+/* ── GEBEDEN ─────────────────────────────────────────── */
+.prayers-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.prayer-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 4px 8px;
+  border: 1.5px solid #e5dcc8;
+  border-radius: 10px;
+  background: #f8f6f0;
+  cursor: pointer;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.prayer-btn:hover:not(:disabled) {
+  border-color: var(--gold);
+  background: #fdf8ea;
+}
+
+.prayer-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.prayer-btn.done {
+  background: var(--done-bg);
+  border-color: var(--done-border);
+  color: var(--done-color);
+}
+
+.prayer-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* ── KORANRECITATIE ──────────────────────────────────── */
+.quran-tracker {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: center;
+}
+
+.counter-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid #e5dcc8;
+  background: #f8f6f0;
+  color: var(--ink);
+  font-size: 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 160ms ease, background 160ms ease, transform 140ms ease;
+  font-family: inherit;
+  line-height: 1;
+}
+
+.counter-btn:hover:not(:disabled) {
+  border-color: var(--gold);
+  background: #fdf8ea;
+}
+
+.counter-btn:active:not(:disabled) {
+  transform: scale(0.93);
+}
+
+.counter-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.quran-display {
+  text-align: center;
+  min-width: 100px;
+}
+
+.quran-value {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--ink);
+  display: block;
+  line-height: 1;
+}
+
+.quran-unit {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* ── TWEE-KOLOMS RIJ ─────────────────────────────────── */
+.two-col-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.two-col-row .card {
+  margin-bottom: 0;
+}
+
+/* ── TOGGLE (Sadaqah, Tahajjud) ──────────────────────── */
+.toggle-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 8px;
+  border: 1.5px solid #e5dcc8;
+  border-radius: 10px;
+  background: #f8f6f0;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.toggle-btn:hover:not(:disabled) {
+  border-color: var(--gold);
+  background: #fdf8ea;
+}
+
+.toggle-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.toggle-btn[aria-pressed="true"] {
+  background: var(--done-bg);
+  border-color: var(--done-border);
+}
+
+.toggle-icon {
+  font-size: 1.3rem;
+  color: #c8bfad;
+  transition: color 160ms ease;
+}
+
+.toggle-btn[aria-pressed="true"] .toggle-icon {
+  color: var(--done-color);
+}
+
+.toggle-text {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.toggle-btn[aria-pressed="true"] .toggle-text {
+  color: var(--done-color);
+}
+
+/* ── EXTRA ʿIBĀDAH ───────────────────────────────────── */
+.extra-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.extra-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 4px 8px;
+  border: 1.5px solid #e5dcc8;
+  border-radius: 10px;
+  background: #f8f6f0;
+  cursor: pointer;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.extra-btn:hover:not(:disabled) {
+  border-color: var(--gold);
+  background: #fdf8ea;
+}
+
+.extra-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.extra-btn.done {
+  background: var(--done-bg);
+  border-color: var(--done-border);
+  color: var(--done-color);
+}
+
+.extra-icon {
+  font-size: 1.2rem;
+}
+
+/* ── KALENDER ────────────────────────────────────────── */
+.calendar-hint {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+  margin: 0 0 12px;
+}
+
+.ten-days-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.day-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 9px 4px 7px;
+  border: 1.5px solid #e5dcc8;
+  border-radius: 10px;
+  background: #f8f6f0;
+  cursor: default;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.day-cell.today {
+  border-color: var(--gold);
+  background: #fdf8ea;
+}
+
+.day-cell.future {
+  opacity: 0.38;
+}
+
+.day-cell.odd-night {
+  border-color: rgba(212, 175, 55, 0.55);
+  background: #fefbee;
+  cursor: pointer;
+}
+
+.day-cell.odd-night:hover {
+  border-color: var(--gold);
+  background: #fdf8ea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.22);
+}
+
+.day-cell.odd-night:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.day-num {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.day-weekday {
+  font-size: 0.58rem;
+  color: var(--muted);
+  line-height: 1;
+}
+
+.day-star {
+  font-size: 0.7rem;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.day-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e5dcc8;
+}
+
+.day-dot.low  { background: var(--heart-orange); }
+.day-dot.mid  { background: var(--heart-red); }
+.day-dot.high { background: var(--heart-green); }
+
+.laylah-legend {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.73rem;
+  color: var(--muted);
+}
+
+.legend-star {
+  color: var(--gold);
+}
+
+/* ── DIALOG ──────────────────────────────────────────── */
+.laylah-dialog {
+  border: none;
+  padding: 0;
+  border-radius: 16px;
+  width: min(520px, 92vw);
+  background: transparent;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.laylah-dialog::backdrop {
+  background: rgba(8, 26, 51, 0.82);
+  backdrop-filter: blur(3px);
+}
+
+.dialog-card {
+  background: linear-gradient(180deg, #fdfbf2, #f6f1df);
+  color: var(--ink);
+  border: 2px solid #dbc374;
+  border-radius: 16px;
+  padding: 22px;
+  position: relative;
+}
+
+.laylah-dialog[open] .dialog-card {
+  animation: dialogPop 340ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes dialogPop {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  background: var(--ink);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  transition: background 160ms ease;
+}
+
+.close-btn:hover {
+  background: #1e4a73;
+}
+
+.dialog-badge {
+  display: inline-block;
+  background: linear-gradient(120deg, var(--gold), #9e7b20);
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+
+.laylah-dialog h3 {
+  margin: 0 0 4px;
+  font-family: "Cinzel", serif;
+  font-size: 1.4rem;
+  color: var(--ink);
+}
+
+.dialog-arabic {
+  font-family: "Noto Naskh Arabic", serif;
+  font-size: 1.3rem;
+  direction: rtl;
+  text-align: right;
+  color: #6b4c12;
+  margin: 0 0 12px;
+}
+
+.dialog-body {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.dialog-body p  { margin: 0 0 8px; }
+.dialog-body ul { margin: 0 0 8px; padding-left: 18px; }
+.dialog-body li { margin-bottom: 3px; }
+
+.source {
+  font-size: 0.76rem;
+  color: #87691f;
+}
+
+.dua-box {
+  background: rgba(212, 175, 55, 0.09);
+  border-left: 4px solid var(--gold);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 10px;
+}
+
+.dua-arabic {
+  font-family: "Noto Naskh Arabic", serif;
+  font-size: 1.1rem;
+  direction: rtl;
+  text-align: right;
+  color: var(--ink);
+  margin: 0 0 5px;
+}
+
+.dua-latin  { font-size: 0.82rem; color: var(--muted); font-style: italic; margin: 0 0 3px; }
+.dua-nl     { font-size: 0.82rem; color: var(--ink);   margin: 0 0 3px; }
+.dua-source { font-size: 0.73rem; color: #87691f;      margin: 0; }
+
+.cta-btn {
+  margin-top: 14px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  color: #fff;
+  background: var(--ink);
+  transition: background 160ms ease, transform 140ms ease;
+}
+
+.cta-btn:hover {
+  background: #1e4a73;
+  transform: translateY(-1px);
+}
+
+/* ── PORTAL BACK ─────────────────────────────────────── */
+.portal-home-wrap {
+  text-align: center;
+  padding: 8px 0 16px;
+}
+
+.portal-home-btn {
+  display: inline-block;
+  text-decoration: none;
+  color: var(--gold);
+  background: rgba(212, 175, 55, 0.10);
+  border: 1px solid var(--gold-border);
+  font-weight: 600;
+  padding: 8px 24px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.portal-home-btn:hover {
+  color: var(--gold-light);
+  background: rgba(212, 175, 55, 0.18);
+  border-color: rgba(212, 175, 55, 0.45);
+  transform: translateY(-1px);
+}
+
+/* ── ANIMATIES ───────────────────────────────────────── */
+@keyframes floatIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media (max-width: 480px) {
+  .app  { padding: 16px 12px 40px; gap: 12px; }
+  .hero { padding: 20px 16px 20px; }
+
+  .prayers-grid { gap: 5px; }
+  .prayer-btn   { padding: 8px 2px 6px; font-size: 0.64rem; }
+
+  .ten-days-grid { gap: 5px; }
+  .day-cell      { padding: 7px 3px 6px; }
+  .day-num       { font-size: 0.88rem; }
+}
+
+@media (max-width: 340px) {
+  .two-col-row { grid-template-columns: 1fr; }
+}
