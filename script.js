@@ -27,6 +27,11 @@ function parseLocalDate(s) {
 }
 
 function getCurrentRamadanDay() {
+  // Testmodus: voeg ?dag=21 toe aan de URL om een specifieke dag te simuleren
+  const params = new URLSearchParams(window.location.search);
+  const testDag = parseInt(params.get("dag"), 10);
+  if (!isNaN(testDag) && testDag >= 1 && testDag <= 30) return testDag;
+
   const start = parseLocalDate(RAMADAN_START_DATE);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
