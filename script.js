@@ -204,7 +204,8 @@ function renderCountdownOrProgress() {
     return;
   }
 
-  countdownCard.hidden = true;
+  countdownCard.hidden = false;
+  countdownTextEl.textContent = "Je bevindt je in de laatste tien dagen!";
   progressCard.style.opacity = "";
 
   const todayDay = getTodayDay();
