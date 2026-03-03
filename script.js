@@ -283,7 +283,7 @@ function renderSadaqah() {
 
   sadaqahBtn.setAttribute("aria-pressed", String(isDone));
   sadaqahIcon.textContent = isDone ? "✅" : "○";
-  sadaqahText.textContent = isDone ? "Gegeven! Bārak Allāhu fīk - Moge Allah ﷻ je zegenen! " : "Nog niet gegeven";
+  sadaqahText.textContent = isDone ? "Gegeven! Moge Allah ﷻ je zegenen!" : "Nog niet gegeven";
   sadaqahBtn.disabled = !isActive;
 }
 
