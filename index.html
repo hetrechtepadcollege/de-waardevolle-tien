@@ -1,207 +1,280 @@
-<!doctype html>
-<html lang="nl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>De Waardevolle Tien | Het Rechte Pad College</title>
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://leer.hetrechtepadcollege.nl/apps/de-waardevolle-tien/" />
-    <meta property="og:site_name" content="Het Rechte Pad College" />
-    <meta property="og:locale" content="nl_NL" />
-    <meta property="og:title" content="De Waardevolle Tien | Het Rechte Pad College" />
-    <meta
-      property="og:description"
-      content="Volg jouw ʿibādah (erediensten) in de laatste 10 dagen en nachten van Ramadan en ontdek de Waardevolle Nacht."
-    />
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:title" content="De Waardevolle Tien | Het Rechte Pad College" />
-    <meta
-      property="twitter:description"
-      content="Volg jouw ʿibādah (erediensten) in de laatste 10 dagen en nachten van Ramadan en ontdek de Waardevolle Nacht."
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Naskh+Arabic:wght@400;700&family=Noto+Sans:wght@400;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <main class="app">
+<!DOCTYPE html>
+<html lang="nl" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>De Waardevolle Tien | Het Rechte Pad College</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
 
-      <!-- ── HERO: branding + voortgang ─────────────────────── -->
-      <header class="hero">
-        <div class="brand-logo-wrap">
-          <img
-            class="brand-logo"
-            src="images/HRPC-logo.png"
-            alt="Het Rechte Pad College logo"
-          />
+<body>
+  <div class="app-wrapper">
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-wrap">
+        <img src="images/HRPC-logo-black.png" alt="Het Rechte Pad College" id="hrpcLogo" />
+      </div>
+      <h1 class="app-title">De <em>Waardevolle</em> Tien</h1>
+      <p class="app-subtitle">"Zoek de Waardevolle Nacht in de laatste tien (nachten) van de Ramadan."</p>
+      <p class="hadith-source">— Profeet Mohammed ﷺ</p>
+
+      <div id="ramadanDayBadge" class="ramadan-day-badge" aria-live="polite"></div>
+
+      <div id="countdownBlock" class="countdown-block">
+        <p id="countdownText" class="countdown-text"></p>
+        <p class="app-description">Met deze app houd je eenvoudig je ʿibādah (erediensten) bij, zodat je doelgericht en bewust het beste uit de laatste tien nachten haalt.</p>
+      </div>
+    </header>
+
+    <!-- Progress -->
+    <section class="progress-section" aria-label="Voortgang vandaag">
+      <div class="progress-ring-container">
+        <svg class="progress-ring" width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
+          <defs>
+            <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#b8860b" />
+              <stop offset="100%" stop-color="#9a6f0a" />
+            </linearGradient>
+          </defs>
+          <circle class="progress-ring-track" cx="60" cy="60" r="51" />
+          <circle class="progress-ring-fill" id="progressRing" cx="60" cy="60" r="51" />
+        </svg>
+        <div class="progress-ring-center">
+          <span class="progress-percent" id="progressPercent" aria-live="polite">0%</span>
+          <span class="progress-label">vandaag</span>
         </div>
-        <h1>De Waardevolle Tien</h1>
-        <p class="app-subtitle">"Zoek de Waardevolle Nacht in de laatste tien (nachten) van de Ramadan." (Hadith)</p>
-        <p class="ramadan-day-label" id="ramadan-day-label">Laden…</p>
+      </div>
+      <p class="progress-description" id="progressDescription">Begin vandaag — elke ʿibādah telt</p>
+    </section>
 
-        <!-- Countdown (zichtbaar vóór dag 21) -->
-        <div class="hero-inset countdown-wrap" id="countdown-card" hidden>
-          <p class="countdown-text" id="countdown-text"></p>
-          <p class="countdown-sub">
-            Met deze app houd je eenvoudig jeʿibādah (erediensten) bij, zodat je doelgericht en bewust het beste uit de laatste tien nachten haalt.
+    <!-- Datum instelling -->
+    <div class="cards-section" style="margin-bottom: 20px;">
+      <div class="ibadah-card" id="dateSettingCard">
+        <div class="card-top" style="cursor:pointer;" id="dateSettingToggle" role="button" aria-expanded="false" aria-controls="dateSettingBody" tabindex="0">
+          <div class="card-left">
+            <div class="card-icon" aria-hidden="true">⚙️</div>
+            <div class="card-info">
+              <div class="card-title">Startdatum Ramadan</div>
+              <div class="card-subtitle" id="dateSettingSubtitle">Eerste dag van Ramadan</div>
+            </div>
+          </div>
+          <span id="dateSettingChevron" style="color:var(--text-subtle); font-size:0.9rem; transition:var(--transition);">▾</span>
+        </div>
+        <div id="dateSettingBody" style="display:none; margin-top:16px; padding-top:16px; border-top:1px solid var(--night-border);">
+          <label style="font-size:0.82rem; color:var(--text-muted); display:block; margin-bottom:8px;">
+            Eerste dag van Ramadan (dag 1) — de laatste 10 nachten worden automatisch berekend
+          </label>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <input
+              type="date"
+              id="ramadanStartInput"
+              style="flex:1; padding:10px 14px; border-radius:var(--radius-sm); border:1.5px solid var(--night-border); background:var(--night); color:var(--text-primary); font-family:'DM Sans',sans-serif; font-size:0.9rem; outline:none; transition:var(--transition);"
+            />
+            <button id="applyDateBtn" style="padding:10px 16px; border-radius:var(--radius-sm); border:1px solid rgba(184,134,11,0.4); background:var(--gold-dim); color:var(--gold); font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:500; cursor:pointer; transition:var(--transition); white-space:nowrap;">Toepassen</button>
+          </div>
+          <p style="font-size:0.75rem; color:var(--text-subtle); margin-top:8px;">
+            De datums in het overzicht worden automatisch bijgewerkt.
           </p>
         </div>
+      </div>
+    </div>
 
-        <!-- Voortgangshart -->
-        <div class="hero-inset progress-wrap" id="progress-card">
-          <div class="heart-container">
-            <svg
-              class="heart-svg"
-              id="progress-heart"
-              viewBox="0 0 32 29.6"
-              aria-label="Voortgangshart"
-              role="img"
-            >
-              <path
-                d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.4,12.4,16,21.2c6.6-8.8,16-11.8,16-21.2C32,3.8,28.2,0,23.6,0z"
-              />
-            </svg>
-          </div>
-          <div class="progress-info">
-            <div class="progress-score-row">
-              <span class="progress-score" id="progress-score">0%</span>
-              <span class="progress-label" id="progress-label">Begin vandaag</span>
+    <!-- Day navigation -->
+    <div class="section-label" aria-label="Laatste Tien dagen">
+      <div class="section-label-icon" aria-hidden="true">🗓️</div>
+      <div class="section-label-text">De Laatste Tien Dagen</div>
+    </div>
+    <p style="font-size:0.78rem; color:var(--text-muted); padding:0 16px; margin-bottom:10px;">Tik op een ✦-nacht voor info over Laylatul Qadr</p>
+    <p id="dayNavMonth" style="font-size:0.78rem; font-weight:600; color:var(--text-muted); padding:0 16px; margin-bottom:8px; letter-spacing:0.04em; display:none;"></p>
+    <nav class="day-nav" aria-label="Navigeer tussen de 10 nachten">
+      <div class="day-nav-inner" id="dayNav" role="list"></div>
+    </nav>
+    <p style="font-size:0.75rem; color:var(--text-muted); padding:6px 16px 0; display:flex; align-items:center; gap:5px;">
+      <span style="color:var(--gold)">✦</span> = Mogelijk Laylatul Qadr (oneven nacht)
+    </p>
+
+    <!-- Current day header -->
+    <div class="current-day-header">
+      <div class="current-day-title">
+        <span id="currentDayLabel">Nacht 1</span>
+        <button class="qadr-badge" id="qadrBadge" style="display:none" aria-haspopup="dialog">✦ Laylatul Qadr</button>
+      </div>
+    </div>
+
+    <!-- Ibadah cards -->
+    <main class="cards-section" id="ibadahCards">
+
+      <!-- 1. Gebeden -->
+      <div class="ibadah-card" id="cardGebeden">
+        <div class="card-top">
+          <div class="card-left">
+            <div class="card-icon" aria-hidden="true">🕌</div>
+            <div class="card-info">
+              <div class="card-title">De Vijf Dagelijkse Gebeden</div>
+              <div class="card-subtitle" id="prayerSubtitle">0 van 5 verricht</div>
             </div>
-            <div class="progress-track">
-              <div class="progress-bar" id="progress-bar"></div>
-            </div>
-            <p class="progress-hint" id="progress-hint">Elke ʿibādah (eredienst) telt!</p>
           </div>
+          <span class="prayers-count" id="prayerCount" aria-live="polite">0/5</span>
         </div>
-      </header>
-
-      <!-- ── GEBEDEN ──────────────────────────────────────────── -->
-      <article class="card">
-        <div class="widget-header">
-          <h2 class="widget-title">🕌 De Vijf Dagelijkse Gebeden</h2>
-          <span class="widget-badge"><span id="prayers-done-count">0</span>/5</span>
+        <div class="prayers-grid" role="group" aria-label="Gebeden">
+          <label class="prayer-check">
+            <input type="checkbox" data-prayer="fajr" aria-label="Fajr" />
+            <span class="prayer-box">✓</span>
+            <span class="prayer-name">Fajr</span>
+          </label>
+          <label class="prayer-check">
+            <input type="checkbox" data-prayer="zuhr" aria-label="Ẓuhr" />
+            <span class="prayer-box">✓</span>
+            <span class="prayer-name">Ẓuhr</span>
+          </label>
+          <label class="prayer-check">
+            <input type="checkbox" data-prayer="asr" aria-label="ʿAṣr" />
+            <span class="prayer-box">✓</span>
+            <span class="prayer-name">ʿAṣr</span>
+          </label>
+          <label class="prayer-check">
+            <input type="checkbox" data-prayer="maghrib" aria-label="Maghrib" />
+            <span class="prayer-box">✓</span>
+            <span class="prayer-name">Maghrib</span>
+          </label>
+          <label class="prayer-check">
+            <input type="checkbox" data-prayer="isha" aria-label="ʿIshāʾ" />
+            <span class="prayer-box">✓</span>
+            <span class="prayer-name">ʿIshāʾ</span>
+          </label>
         </div>
-        <div class="prayers-grid" id="prayers-grid" role="group" aria-label="Gebeden vandaag"></div>
-      </article>
-
-      <!-- ── KORANRECITATIE ────────────────────────────────────── -->
-      <article class="card">
-        <div class="widget-header">
-          <h2 class="widget-title">📖 Koranrecitatie</h2>
-        </div>
-        <div class="quran-tracker">
-          <button class="counter-btn" id="quran-minus" aria-label="Minder pagina's">−</button>
-          <div class="quran-display">
-            <span class="quran-value" id="quran-pages">0</span>
-            <span class="quran-unit">pagina's vandaag</span>
-          </div>
-          <button class="counter-btn" id="quran-plus" aria-label="Meer pagina's">+</button>
-        </div>
-      </article>
-
-      <!-- ── SADAQAH + TAHAJJUD ────────────────────────────────── -->
-      <div class="two-col-row">
-        <article class="card">
-          <div class="widget-header">
-            <h2 class="widget-title">💚 Sadaqah (Liefdadigheid)</h2>
-          </div>
-          <button class="toggle-btn" id="sadaqah-btn" aria-pressed="false">
-            <span class="toggle-icon" id="sadaqah-icon">○</span>
-            <span class="toggle-text" id="sadaqah-text">Nog niet gegeven</span>
-          </button>
-        </article>
-        <article class="card">
-          <div class="widget-header">
-            <h2 class="widget-title">🌙 Nachtgebed (Tarāwīḥ/Tahajjud)</h2>
-          </div>
-          <button class="toggle-btn" id="tahajjud-btn" aria-pressed="false">
-            <span class="toggle-icon" id="tahajjud-icon">○</span>
-            <span class="toggle-text" id="tahajjud-text">Nog niet verricht</span>
-          </button>
-        </article>
       </div>
 
-      <!-- ── EXTRA ʿIBĀDAH ─────────────────────────────────────── -->
-      <article class="card">
-        <div class="widget-header">
-          <h2 class="widget-title">✨ Extra ʿibādah (erediensten)</h2>
+      <!-- 2. Koran -->
+      <div class="ibadah-card" id="cardKoran">
+        <div class="card-top">
+          <div class="card-left">
+            <div class="card-icon" aria-hidden="true">📖</div>
+            <div class="card-info">
+              <div class="card-title">Koranrecitatie</div>
+              <div class="card-subtitle" id="koranSubtitle">Pagina's vandaag</div>
+            </div>
+          </div>
+          <div class="stepper" role="group" aria-label="Aantal pagina's Koran">
+            <button class="stepper-btn" id="koranMinus" aria-label="Minder pagina's">−</button>
+            <span class="stepper-value" id="koranValue" aria-live="polite" aria-atomic="true">0</span>
+            <button class="stepper-btn" id="koranPlus" aria-label="Meer pagina's">+</button>
+          </div>
         </div>
-        <div
-          class="extra-grid"
-          id="extra-grid"
-          role="group"
-          aria-label="Extra ibadah vandaag"
-        ></div>
-      </article>
-
-      <!-- ── LAATSTE 10 DAGEN ──────────────────────────────────── -->
-      <article class="card">
-        <div class="widget-header">
-          <h2 class="widget-title">🗓️ Laatste 10 Dagen</h2>
-        </div>
-        <p class="calendar-hint">Tik op een ✦-nacht voor info over Laylatul Qadr</p>
-        <div
-          class="ten-days-grid"
-          id="ten-days-grid"
-          aria-label="Kalender laatste 10 dagen van Ramadan"
-        ></div>
-        <p class="laylah-legend">
-          <span class="legend-star">✦</span> = Mogelijk Laylatul Qadr (oneven nacht)
-        </p>
-      </article>
-
-      <div class="portal-home-wrap">
-        <a class="portal-home-btn" href="../../">← Terug naar Leerportaal</a>
       </div>
+
+      <!-- 3. Sadaqah -->
+      <div class="ibadah-card" id="cardSadaqah">
+        <div class="card-top">
+          <div class="card-left">
+            <div class="card-icon" aria-hidden="true">💚</div>
+            <div class="card-info">
+              <div class="card-title">Sadaqah</div>
+              <div class="card-subtitle" id="sadaqahSubtitle">Nog niet gegeven</div>
+            </div>
+          </div>
+          <input type="checkbox" class="toggle-btn" id="sadaqahToggle" role="switch" aria-label="Sadaqah gegeven" aria-checked="false" />
+        </div>
+      </div>
+
+      <!-- 4. Nachtgebed -->
+      <div class="ibadah-card" id="cardNacht">
+        <div class="card-top">
+          <div class="card-left">
+            <div class="card-icon" aria-hidden="true">🌙</div>
+            <div class="card-info">
+              <div class="card-title">Nachtgebed</div>
+              <div class="card-subtitle" id="nachtSubtitle">Tarāwīḥ / Tahajjud — Nog niet verricht</div>
+            </div>
+          </div>
+          <input type="checkbox" class="toggle-btn" id="nachtToggle" role="switch" aria-label="Nachtgebed verricht" aria-checked="false" />
+        </div>
+      </div>
+
+      <!-- 5. Extra ibadah -->
+      <div class="ibadah-card" id="cardExtra">
+        <div class="card-top">
+          <div class="card-left">
+            <div class="card-icon" aria-hidden="true">✨</div>
+            <div class="card-info">
+              <div class="card-title">Extra ʿIbādah</div>
+              <div class="card-subtitle">Aanvullende erediensten</div>
+            </div>
+          </div>
+        </div>
+        <div class="extra-list" role="group" aria-label="Extra erediensten">
+          <label class="extra-item">
+            <input type="checkbox" data-extra="dua" />
+            <span class="extra-check-box">✓</span>
+            <span class="extra-label">🤲🏽 Duāʾ maken</span>
+          </label>
+          <label class="extra-item">
+            <input type="checkbox" data-extra="istighfar" />
+            <span class="extra-check-box">✓</span>
+            <span class="extra-label">🙏🏽 Istighfār (smeekbeden om vergeving)</span>
+          </label>
+          <label class="extra-item">
+            <input type="checkbox" data-extra="dzikr" />
+            <span class="extra-check-box">✓</span>
+            <span class="extra-label">📿 Dzikr / Tasbīḥ</span>
+          </label>          
+          <label class="extra-item">
+            <input type="checkbox" data-extra="tahajjud_extra" />
+            <span class="extra-check-box">✓</span>
+            <span class="extra-label">⭐ Extra (nacht)gebeden (Tarāwīḥ / Tahajjud / Qaḍā)</span>
+          </label>
+        </div>
+      </div>
+
     </main>
 
-    <!-- ── LAYLATUL QADR DIALOG ──────────────────────────────── -->
-    <dialog id="laylah-dialog" class="laylah-dialog">
-      <article class="dialog-card">
-        <button id="close-laylah" class="close-btn" aria-label="Sluiten">×</button>
-        <div class="dialog-badge">✦ Oneven nacht</div>
-        <h3 id="laylah-night-title">Laylatul Qadr</h3>
-        <p class="dialog-arabic" lang="ar">لَيْلَةُ الْقَدْرِ</p>
-        <div class="dialog-body">
-          <p>
-            Dit is een <strong>oneven nacht</strong> in de laatste 10 dagen van Ramadan — een van
-            de nachten waarop <strong>Laylatul Qadr</strong> kan vallen.
-          </p>
-          <p>
-            Allah zegt in de Koran:
-            <em>"De Nacht van Qadr is beter dan duizend maanden."</em>
-            <span class="source">(97:3)</span>  
-          </p>
-          <p>Benut deze nacht door extra ʿibādah (erediensten) te doen:</p>
-          <ul>
-            <li>🙏🏽 Extra (nacht)gebeden (Tarāwīḥ / Tahajjud)</li>
-            <li>📖 Meer Koranrecitatie</li>
-            <li>🤲🏽 Veel duāʾ maken</li>
-            <li>💚 Wat meer sadaqah geven</li>
-            <li>📿 Langer dzikr doen</li>
-          </ul>
-          <div class="dua-box">
-            <p class="dua-arabic" lang="ar">
-              اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي
-            </p>
-            <p class="dua-latin"><em>Allāhumma innaka ʿafuwwun tuḥibbul-ʿafwa faʿfu ʿannī</em></p>
-            <p class="dua-nl">O Allah, U bent de Alvergevende, U houdt van vergeven, vergeef mij dan.</p>
-            <p class="dua-source">— Hadith</p>
-          </div>
-        </div>
-        <button class="cta-btn" id="close-laylah-bottom">Begrepen — ik ga mijn best doen!</button>
-      </article>
-    </dialog>
+    <!-- Save -->
+    <div class="cta-section">
+      <button class="save-btn" id="saveBtn">Dag opslaan</button>
+    </div>
 
-    <script src="script.js"></script>
-    <script
-      data-goatcounter="https://hetrechtepadcollege.goatcounter.com/count"
-      async
-      src="//gc.zgo.at/count.js"
-    ></script>
-  </body>
+    <!-- Footer -->
+    <footer class="app-footer">
+      <a href="../../" class="back-link">← Terug naar Leerportaal</a>
+    </footer>
+
+  </div><!-- /.app-wrapper -->
+
+  <!-- Laylatul Qadr Modal -->
+  <div class="modal-backdrop" id="qadrModal" role="dialog" aria-modal="true" aria-label="Laylatul Qadr informatie">
+    <div class="modal">
+      <div class="modal-handle" aria-hidden="true"></div>
+      <div class="modal-star" aria-hidden="true">✦</div>
+      <h2 class="modal-title">Laylatul Qadr</h2>
+      <p class="modal-arabic" lang="ar">لَيْلَةُ الْقَدْرِ</p>
+      <blockquote class="modal-verse">
+        "De Nacht van Qadr is beter dan duizend maanden." <cite>(Koran 97:3)</cite>
+      </blockquote>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">Dit is een oneven nacht in de laatste 10 dagen van Ramadan — een van de nachten waarop Laylatul Qadr kan vallen.</p>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">Benut deze nacht met extra ʿibādah:</p>
+      <ul class="modal-list" aria-label="Aanbevolen erediensten">
+        <li><span>🌟</span><span>Extra (nacht)gebeden — Tarāwīḥ / Tahajjud / Qaḍā</span></li>
+        <li><span>📖</span><span>Meer Koranrecitatie</span></li>
+        <li><span>🤲🏽</span><span>Veel duāʾ maken</span></li>
+        <li><span>💚</span><span>Extra sadaqah geven</span></li>
+        <li><span>📿</span><span>Langer dzikr / tasbīḥ doen</span></li>
+      </ul>
+      <div class="modal-dua">
+        <span class="arabic-text" lang="ar">اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي</span>
+        <span class="transliteration">Allāhumma innaka ʿafuwwun tuḥibbul-ʿafwa faʿfu ʿannī</span>
+        <span class="translation">O Allah, U bent de Alvergevende, U houdt van vergeven, vergeef mij dan. — Hadith</span>
+      </div>
+      <button class="modal-close" id="modalClose">Begrepen — ik ga mijn best doen!</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
 </html>

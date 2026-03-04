@@ -1,482 +1,432 @@
-// ---- Constanten ----
-const RAMADAN_START_DATE = "2026-02-19";
-const LAST_TEN_START = 21;
-const ODD_NIGHTS = new Set([21, 23, 25, 27, 29]);
-const STORAGE_KEY = "de-waardevolle-tien-2026";
+// ─── State ──────────────────────────────────────────────────
+const TOTAL_DAYS = 10;
+const ODD_NIGHTS = [1, 3, 5, 7, 9]; // Oneven nachten (Laylatul Qadr-kandidaten)
+const WEEKDAYS   = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'];
+const MONTHS_NL  = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+const MONTHS_FULL = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+const DEFAULT_START = '2026-02-19';
 
-const PRAYERS = [
-  { id: "fajr",    label: "Fajr",    icon: "🌅" },
-  { id: "zuhr",   label: "Ẓuhr",   icon: "☀️" },
-  { id: "asr",     label: "ʿAṣr",     icon: "🌤️" },
-  { id: "maghrib", label: "Maghrib", icon: "🌇" },
-  { id: "isha",    label: "ʿIshāʾ",    icon: "🌙" },
-];
+let currentDay = 1;
+let data = loadData();
 
-const EXTRA_ITEMS = [
-  { id: "dua",    label: "Duāʾ",    icon: "🤲🏽" },
-  { id: "dzikr",  label: "Dzikr",   icon: "📿" },
-  { id: "itikaf", label: "Iʿtikāf", icon: "🕌" },
-];
+// ─── LocalStorage helpers ────────────────────────────────────
+function loadData() {
+  try {
+    const raw = localStorage.getItem('waardevolle-tien-v2');
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
 
-const NL_WEEKDAYS = ["zo", "ma", "di", "wo", "do", "vr", "za"];
+function saveData() {
+  try { localStorage.setItem('waardevolle-tien-v2', JSON.stringify(data)); } catch {}
+}
 
-// ---- Datum-hulpfuncties ----
-function parseLocalDate(s) {
-  const [y, m, d] = s.split("-").map(Number);
+function loadStartDate() {
+  return localStorage.getItem('waardevolle-tien-startdate') || DEFAULT_START;
+}
+
+function saveStartDate(val) {
+  localStorage.setItem('waardevolle-tien-startdate', val);
+}
+
+// ─── Datum helpers ───────────────────────────────────────────
+function getRamadanStart() {
+  const [y, m, d] = loadStartDate().split('-').map(Number);
   return new Date(y, m - 1, d);
 }
 
-function getCurrentRamadanDay() {
-  // Testmodus: voeg ?dag=21 toe aan de URL om een specifieke dag te simuleren
-  const params = new URLSearchParams(window.location.search);
-  const testDag = parseInt(params.get("dag"), 10);
-  if (!isNaN(testDag) && testDag >= 1 && testDag <= 30) return testDag;
-
-  const start = parseLocalDate(RAMADAN_START_DATE);
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const diff = Math.floor((today - start) / 86400000) + 1;
-  if (diff < 1) return 0;
-  return Math.min(diff, 30);
+function getLastTenStart() {
+  // Dag 21 van Ramadan = eerste van de laatste 10 nachten
+  const start = getRamadanStart();
+  start.setDate(start.getDate() + 20);
+  return start;
 }
 
-function getRamadanDayDate(day) {
-  const start = parseLocalDate(RAMADAN_START_DATE);
-  const d = new Date(start);
-  d.setDate(d.getDate() + day - 1);
+function getDayDate(dayIndex) {
+  const d = new Date(getLastTenStart());
+  d.setDate(d.getDate() + (dayIndex - 1));
   return d;
 }
 
-function daysUntilDay21() {
-  const day21Date = getRamadanDayDate(LAST_TEN_START);
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  return Math.max(0, Math.floor((day21Date - today) / 86400000));
+function formatDateNL(date) {
+  return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-// ---- DataBeheer ----
-function loadData() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
-  catch { return {}; }
-}
-
-function saveData(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-function emptyDayData() {
-  return {
-    prayers: { fajr: false, zuhr: false, asr: false, maghrib: false, isha: false },
-    quranPages: 0,
-    sadaqah: false,
-    tahajjud: false,
-    dua: false,
-    dzikr: false,
-    itikaf: false,
-  };
-}
-
-function getDayData(allData, day) {
-  const stored = allData[day];
-  if (!stored) return emptyDayData();
-  // Merge zodat nieuwe velden altijd aanwezig zijn
-  return { ...emptyDayData(), ...stored, prayers: { ...emptyDayData().prayers, ...(stored.prayers || {}) } };
-}
-
-// ---- Score-berekening ----
-function calculateScore(dayData) {
-  let score = 0;
-
-  // Gebeden: 10 pt elk (max 50)
-  for (const v of Object.values(dayData.prayers)) {
-    if (v) score += 10;
+// ─── Data helpers ────────────────────────────────────────────
+function getDayData(day) {
+  if (!data[day]) {
+    data[day] = {
+      prayers: { fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false },
+      koran: 0,
+      sadaqah: false,
+      nacht: false,
+      extra: { dzikr: false, dua: false, istighfar: false, tahajjud_extra: false }
+    };
   }
-
-  // Koranrecitatie: max 20 pt
-  const pages = dayData.quranPages || 0;
-  if (pages >= 20)      score += 20;
-  else if (pages >= 10) score += 15;
-  else if (pages >= 1)  score += 10;
-
-  // Sadaqah: 10 pt
-  if (dayData.sadaqah) score += 10;
-
-  // Tahajjud: 5 pt
-  if (dayData.tahajjud) score += 5;
-
-  // Extra ibadah: 5 pt elk (max 15)
-  if (dayData.dua)    score += 5;
-  if (dayData.dzikr)  score += 5;
-  if (dayData.itikaf) score += 5;
-
-  return score; // max 100
+  return data[day];
 }
 
-function getLevel(score) {
-  if (score >= 70) return "high";
-  if (score >= 40) return "mid";
-  return "low";
+function calcProgress(dayObj) {
+  let done = 0, total = 8; // 5 gebeden + koran>0 + sadaqah + nacht
+  const p = dayObj.prayers;
+  ['Fajr','Ẓuhr','ʿAṣr','Maghrib','ʿIshāʾ'].forEach(k => { if (p[k]) done++; });
+  if (dayObj.koran > 0) done++;
+  if (dayObj.sadaqah) done++;
+  if (dayObj.nacht) done++;
+  return Math.round((done / total) * 100);
 }
 
-function getLevelLabel(score, level) {
-  if (score === 0)     return "Begin vandaag";
-  if (level === "high") return "Māshā Allāh — uitstekend bezig! 🌟";
-  if (level === "mid")  return "Goed bezig, blijf doorgaan!";
-  return "Elke stap telt — ga door!";
-}
+// ─── Ramadan status ──────────────────────────────────────────
+function updateRamadanStatus() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-function getHint(score, level) {
-  if (score === 0)      return "Begin klein — zelfs één gebed verandert de dag.";
-  if (level === "high") return "SubhānAllāh, je doet het uitstekend vandaag!";
-  if (level === "mid")  return "Goed bezig! Probeer nog wat extra dzikr of sadaqah.";
-  return "Begin met de vijf dagelijkse gebeden — dat is de basis.";
-}
+  const ramadanStart = getRamadanStart();
+  ramadanStart.setHours(0, 0, 0, 0);
 
-// ---- App-toestand ----
-let appData = loadData();
-const currentDay = getCurrentRamadanDay();
+  const lastTenStart = getLastTenStart();
+  lastTenStart.setHours(0, 0, 0, 0);
 
-function getState() {
-  if (currentDay < LAST_TEN_START) return "waiting"; // voor dag 21
-  if (currentDay <= 30)            return "active";   // in laatste 10 dagen
-  return "ended";                                      // Ramadan voorbij
-}
+  const ramadanEnd = new Date(ramadanStart);
+  ramadanEnd.setDate(ramadanEnd.getDate() + 29); // dag 30
 
-function getTodayDay() {
-  if (getState() !== "active") return null;
-  return currentDay;
-}
+  const badge = document.getElementById('ramadanDayBadge');
+  const countdownText = document.getElementById('countdownText');
+  const msPerDay = 86400000;
+  const dayInRamadan = Math.floor((today - ramadanStart) / msPerDay) + 1;
 
-// ---- DOM-referenties ----
-const ramadanDayLabelEl   = document.getElementById("ramadan-day-label");
-const countdownCard       = document.getElementById("countdown-card");
-const countdownTextEl     = document.getElementById("countdown-text");
-const progressCard        = document.getElementById("progress-card");
-const progressHeartEl     = document.getElementById("progress-heart");
-const progressScoreEl     = document.getElementById("progress-score");
-const progressLabelEl     = document.getElementById("progress-label");
-const progressBarEl       = document.getElementById("progress-bar");
-const progressHintEl      = document.getElementById("progress-hint");
-const prayersGridEl       = document.getElementById("prayers-grid");
-const prayersDoneCountEl  = document.getElementById("prayers-done-count");
-const quranPagesEl        = document.getElementById("quran-pages");
-const quranMinusBtn       = document.getElementById("quran-minus");
-const quranPlusBtn        = document.getElementById("quran-plus");
-const sadaqahBtn          = document.getElementById("sadaqah-btn");
-const sadaqahIcon         = document.getElementById("sadaqah-icon");
-const sadaqahText         = document.getElementById("sadaqah-text");
-const tahajjudBtn         = document.getElementById("tahajjud-btn");
-const tahajjudIcon        = document.getElementById("tahajjud-icon");
-const tahajjudText        = document.getElementById("tahajjud-text");
-const extraGridEl         = document.getElementById("extra-grid");
-const tenDaysGridEl       = document.getElementById("ten-days-grid");
-const laylahDialog        = document.getElementById("laylah-dialog");
-const laylahNightTitleEl  = document.getElementById("laylah-night-title");
-const closeLaylahBtn      = document.getElementById("close-laylah");
-const closeLaylahBottomBtn = document.getElementById("close-laylah-bottom");
+  if (today < ramadanStart) {
+    const daysUntil = Math.ceil((ramadanStart - today) / msPerDay);
+    badge.textContent = '';
+    countdownText.textContent = `Ramadan begint over ${daysUntil} dag${daysUntil !== 1 ? 'en' : ''}`;
+    countdownText.className = 'countdown-text';
+  } else if (today <= ramadanEnd) {
+    badge.textContent = `Ramadan dag ${dayInRamadan} van 30`;
+    const daysUntilLastTen = Math.ceil((lastTenStart - today) / msPerDay);
 
-// ---- Render-functies ----
-function renderHeader() {
-  const state = getState();
-  if (currentDay === 0) {
-    ramadanDayLabelEl.textContent = "Ramadan is nog niet begonnen";
-  } else if (state === "waiting") {
-    ramadanDayLabelEl.textContent = `Ramadan dag ${currentDay} van 30`;
-  } else if (state === "active") {
-    ramadanDayLabelEl.textContent = `Ramadan dag ${currentDay} van 30 · Laatste 10 dagen`;
-  } else {
-    ramadanDayLabelEl.textContent = "Ramadan 1447 — Alhamdulillah";
-  }
-}
-
-function renderCountdownOrProgress() {
-  const state = getState();
-
-  if (state === "waiting") {
-    const days = daysUntilDay21();
-    countdownCard.hidden = false;
-    progressCard.style.opacity = "0.5";
-    if (days === 0) {
-      countdownTextEl.textContent = "Morgen beginnen de laatste 10 dagen!";
+    if (today < lastTenStart) {
+      countdownText.textContent = `Nog ${daysUntilLastTen} dag${daysUntilLastTen !== 1 ? 'en' : ''} tot de laatste 10!`;
+      countdownText.className = 'countdown-text';
     } else {
-      countdownTextEl.textContent = `Nog ${days} ${days === 1 ? "dag" : "dagen"} tot de laatste 10!`;
+      const nightInLastTen = Math.floor((today - lastTenStart) / msPerDay) + 1;
+      countdownText.textContent = `We zijn in de laatste 10 nachten — nacht ${nightInLastTen}!`;
+      countdownText.className = 'countdown-text active';
     }
-    return;
-  }
-
-  countdownCard.hidden = false;
-  countdownTextEl.textContent = "Je bevindt je in de laatste tien dagen!";
-  progressCard.style.opacity = "";
-
-  const todayDay = getTodayDay();
-  if (!todayDay) {
-    progressScoreEl.textContent = "—";
-    progressLabelEl.textContent = "Ramadan is afgelopen";
-    progressBarEl.style.width = "0%";
-    progressHintEl.textContent = "Moge Allah jullie ʿibādah accepteren. Amīn!";
-    progressHeartEl.className = "heart-svg mid";
-    return;
-  }
-
-  const dayData = getDayData(appData, todayDay);
-  const score = calculateScore(dayData);
-  const level = getLevel(score);
-
-  progressScoreEl.textContent = `${score}%`;
-  progressLabelEl.textContent = getLevelLabel(score, level);
-  progressBarEl.style.width = `${score}%`;
-  progressBarEl.className = `progress-bar ${level}`;
-  progressHintEl.textContent = getHint(score, level);
-  progressHeartEl.className = `heart-svg ${level}`;
-}
-
-function renderPrayers() {
-  const todayDay = getTodayDay();
-  const dayData = todayDay ? getDayData(appData, todayDay) : emptyDayData();
-  const isActive = !!todayDay;
-
-  prayersGridEl.innerHTML = "";
-  let done = 0;
-
-  for (const prayer of PRAYERS) {
-    const isDone = dayData.prayers[prayer.id];
-    if (isDone) done++;
-
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = `prayer-btn${isDone ? " done" : ""}`;
-    btn.setAttribute("aria-pressed", String(isDone));
-    btn.setAttribute("aria-label", `${prayer.label}${isDone ? " — gebeden" : ""}`);
-    btn.innerHTML = `<span class="prayer-icon">${isDone ? "✅" : prayer.icon}</span>${prayer.label}`;
-    btn.disabled = !isActive;
-
-    btn.addEventListener("click", () => {
-      const today = getTodayDay();
-      if (!today) return;
-      const data = getDayData(appData, today);
-      data.prayers[prayer.id] = !data.prayers[prayer.id];
-      appData[today] = data;
-      saveData(appData);
-      renderAll();
-    });
-
-    prayersGridEl.append(btn);
-  }
-
-  prayersDoneCountEl.textContent = done;
-}
-
-function renderQuran() {
-  const todayDay = getTodayDay();
-  const dayData = todayDay ? getDayData(appData, todayDay) : emptyDayData();
-  const isActive = !!todayDay;
-
-  quranPagesEl.textContent = dayData.quranPages;
-  quranMinusBtn.disabled = !isActive || dayData.quranPages <= 0;
-  quranPlusBtn.disabled = !isActive;
-}
-
-function renderSadaqah() {
-  const todayDay = getTodayDay();
-  const dayData = todayDay ? getDayData(appData, todayDay) : emptyDayData();
-  const isDone = dayData.sadaqah;
-  const isActive = !!todayDay;
-
-  sadaqahBtn.setAttribute("aria-pressed", String(isDone));
-  sadaqahIcon.textContent = isDone ? "✅" : "○";
-  sadaqahText.textContent = isDone ? "Gegeven! Moge Allah ﷻ je zegenen!" : "Nog niet gegeven";
-  sadaqahBtn.disabled = !isActive;
-}
-
-function renderTahajjud() {
-  const todayDay = getTodayDay();
-  const dayData = todayDay ? getDayData(appData, todayDay) : emptyDayData();
-  const isDone = dayData.tahajjud;
-  const isActive = !!todayDay;
-
-  tahajjudBtn.setAttribute("aria-pressed", String(isDone));
-  tahajjudIcon.textContent = isDone ? "✅" : "○";
-  tahajjudText.textContent = isDone ? "Verricht! Māshā Allāh!" : "Nog niet verricht";
-  tahajjudBtn.disabled = !isActive;
-}
-
-function renderExtraIbadah() {
-  const todayDay = getTodayDay();
-  const dayData = todayDay ? getDayData(appData, todayDay) : emptyDayData();
-  const isActive = !!todayDay;
-
-  extraGridEl.innerHTML = "";
-
-  for (const item of EXTRA_ITEMS) {
-    const isDone = dayData[item.id];
-
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = `extra-btn${isDone ? " done" : ""}`;
-    btn.setAttribute("aria-pressed", String(isDone));
-    btn.setAttribute("aria-label", `${item.label}${isDone ? " — gedaan" : ""}`);
-    btn.innerHTML = `<span class="extra-icon">${isDone ? "✅" : item.icon}</span>${item.label}`;
-    btn.disabled = !isActive;
-
-    btn.addEventListener("click", () => {
-      const today = getTodayDay();
-      if (!today) return;
-      const data = getDayData(appData, today);
-      data[item.id] = !data[item.id];
-      appData[today] = data;
-      saveData(appData);
-      renderAll();
-    });
-
-    extraGridEl.append(btn);
+  } else {
+    badge.textContent = 'Ramadan 2026';
+    countdownText.textContent = 'Moge Allah onze ʿibādah aanvaarden.';
+    countdownText.className = 'countdown-text';
   }
 }
 
-function renderCalendar() {
-  tenDaysGridEl.innerHTML = "";
+// ─── Date setting ────────────────────────────────────────────
+function initDateSetting() {
+  const input    = document.getElementById('ramadanStartInput');
+  const subtitle = document.getElementById('dateSettingSubtitle');
+  const toggle   = document.getElementById('dateSettingToggle');
+  const body     = document.getElementById('dateSettingBody');
+  const chevron  = document.getElementById('dateSettingChevron');
 
-  for (let day = LAST_TEN_START; day <= 30; day++) {
-    const date = getRamadanDayDate(day);
-    const weekday = NL_WEEKDAYS[date.getDay()];
-    const isOdd = ODD_NIGHTS.has(day);
-    const isToday = day === currentDay;
-    const isPast = day < currentDay;
-    const isFuture = day > currentDay;
+  input.value = loadStartDate();
+  subtitle.textContent = 'Ramadan start: ' + formatDateNL(getRamadanStart());
 
-    const dayData = getDayData(appData, day);
-    const score = calculateScore(dayData);
-    const level = getLevel(score);
-    const hasDoneAnything = score > 0;
+  function openPanel() {
+    const isOpen = body.style.display !== 'none';
+    body.style.display = isOpen ? 'none' : 'block';
+    chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+    toggle.setAttribute('aria-expanded', !isOpen);
+  }
 
-    const classes = ["day-cell"];
-    if (isOdd)   classes.push("odd-night");
-    if (isToday) classes.push("today");
-    if (isPast)  classes.push("past");
-    if (isFuture) classes.push("future");
+  toggle.addEventListener('click', openPanel);
+  toggle.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPanel(); }
+  });
 
-    const cell = document.createElement("div");
-    cell.className = classes.join(" ");
-    cell.dataset.day = String(day);
+  document.getElementById('applyDateBtn').addEventListener('click', () => {
+    const val = input.value;
+    if (!val) return;
+    saveStartDate(val);
+    subtitle.textContent = 'Ramadan start: ' + formatDateNL(getRamadanStart());
+    body.style.display = 'none';
+    chevron.style.transform = '';
+    toggle.setAttribute('aria-expanded', 'false');
+    updateRamadanStatus();
+    buildDayNav();
+    showToast('✓ Startdatum opgeslagen');
+  });
 
-    if (isOdd) {
-      cell.setAttribute("role", "button");
-      cell.setAttribute("tabindex", "0");
-      cell.setAttribute(
-        "aria-label",
-        `Dag ${day} van Ramadan — mogelijk Laylatul Qadr. Tik voor meer info.`
-      );
+  input.addEventListener('focus', () => { input.style.borderColor = 'var(--gold)'; });
+  input.addEventListener('blur',  () => { input.style.borderColor = 'var(--night-border)'; });
+}
+
+// ─── Day navigation ──────────────────────────────────────────
+function buildDayNav() {
+  const nav = document.getElementById('dayNav');
+  nav.innerHTML = '';
+
+  const days = [];
+  for (let d = 1; d <= TOTAL_DAYS; d++) {
+    days.push({ d, date: getDayDate(d) });
+  }
+
+  const months = [...new Set(days.map(x => x.date.getMonth()))];
+  const multiMonth = months.length > 1;
+  let lastMonth = -1;
+
+  days.forEach(({ d, date }) => {
+    const month = date.getMonth();
+
+    if (multiMonth && month !== lastMonth) {
+      const label = document.createElement('div');
+      label.style.cssText = `
+        grid-column: 1 / -1;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-subtle);
+        padding: 4px 2px 0;
+      `;
+      label.textContent = MONTHS_NL[month] + ' ' + date.getFullYear();
+      nav.appendChild(label);
+      lastMonth = month;
     }
 
-    const starHtml = isOdd ? `<span class="day-star" aria-hidden="true">✦</span>` : "";
-    const dotHtml = (isPast || isToday)
-      ? `<span class="day-dot ${hasDoneAnything ? level : ""}"></span>`
-      : "";
+    const isOdd  = ODD_NIGHTS.includes(d);
+    const pct    = calcProgress(getDayData(d));
+    const dateNum = date.getDate();
+    const weekday = WEEKDAYS[date.getDay()];
 
-    cell.innerHTML = `
-      <span class="day-num">${day}</span>
+    const btn = document.createElement('button');
+    btn.className = 'day-btn' +
+      (d === currentDay ? ' active' : '') +
+      (pct === 100 ? ' completed' : '');
+    btn.setAttribute('role', 'listitem');
+    btn.setAttribute('aria-label', `${dateNum} ${MONTHS_NL[month]} — Nacht ${d}${isOdd ? ', mogelijke Laylatul Qadr nacht' : ''}${pct === 100 ? ' (voltooid)' : ''}`);
+    btn.setAttribute('aria-pressed', d === currentDay ? 'true' : 'false');
+    if (isOdd) btn.setAttribute('aria-haspopup', 'dialog');
+
+    btn.innerHTML = `
+      <span class="day-date">${dateNum}</span>
       <span class="day-weekday">${weekday}</span>
-      ${starHtml}
-      ${dotHtml}
+      ${isOdd
+        ? `<span class="qadr-star" aria-hidden="true">✦</span>`
+        : `<span style="height:12px;display:block"></span>`}
     `;
 
-    if (isOdd) {
-      cell.addEventListener("click", () => openLaylahDialog(day));
-      cell.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          openLaylahDialog(day);
-        }
-      });
-    }
+    btn.addEventListener('click', () => {
+      selectDay(d);
+      if (isOdd) openModal();
+    });
 
-    tenDaysGridEl.append(cell);
+    nav.appendChild(btn);
+  });
+
+  // Maandlabel als er maar één maand is
+  const monthEl = document.getElementById('dayNavMonth');
+  if (!multiMonth) {
+    monthEl.textContent = MONTHS_FULL[getDayDate(1).getMonth()] + ' ' + getDayDate(1).getFullYear();
+    monthEl.style.display = 'block';
+  } else {
+    monthEl.style.display = 'none';
   }
 }
 
-function renderAll() {
-  renderHeader();
-  renderCountdownOrProgress();
-  renderPrayers();
-  renderQuran();
-  renderSadaqah();
-  renderTahajjud();
-  renderExtraIbadah();
-  renderCalendar();
+function selectDay(day) {
+  currentDay = day;
+  buildDayNav();
+  renderDay();
 }
 
-// ---- Dialog ----
-function openLaylahDialog(day) {
-  const nightWord = day % 2 !== 0 ? "oneven" : "even";
-  laylahNightTitleEl.textContent = `Nacht ${day} — Mogelijk Laylatul Qadr`;
-  laylahDialog.showModal();
-  trackEvent("de-waardevolle-tien/laylah-nacht-info", `Nacht ${day} info bekeken`);
+// ─── Render current day ───────────────────────────────────────
+function renderDay() {
+  const d = getDayData(currentDay);
+  const isOdd = ODD_NIGHTS.includes(currentDay);
+  const currentDate = getDayDate(currentDay);
+
+  document.getElementById('currentDayLabel').textContent =
+    `Nacht ${currentDay} — ${currentDate.getDate()} ${MONTHS_FULL[currentDate.getMonth()]}`;
+
+  const badge = document.getElementById('qadrBadge');
+  badge.style.display = isOdd ? 'inline-flex' : 'none';
+
+  document.querySelectorAll('[data-prayer]').forEach(cb => {
+    cb.checked = d.prayers[cb.dataset.prayer] || false;
+  });
+  updatePrayerUI(d);
+
+  document.getElementById('koranValue').textContent = d.koran;
+  updateKoranUI(d);
+
+  const sadaqahToggle = document.getElementById('sadaqahToggle');
+  sadaqahToggle.checked = d.sadaqah;
+  sadaqahToggle.setAttribute('aria-checked', d.sadaqah);
+  updateSadaqahUI(d);
+
+  const nachtToggle = document.getElementById('nachtToggle');
+  nachtToggle.checked = d.nacht;
+  nachtToggle.setAttribute('aria-checked', d.nacht);
+  updateNachtUI(d);
+
+  document.querySelectorAll('[data-extra]').forEach(cb => {
+    cb.checked = d.extra[cb.dataset.extra] || false;
+  });
+  updateExtraUI(d);
+  updateProgress(d);
 }
 
-closeLaylahBtn.addEventListener("click", () => laylahDialog.close());
-closeLaylahBottomBtn.addEventListener("click", () => laylahDialog.close());
+// ─── UI update helpers ────────────────────────────────────────
+function updatePrayerUI(d) {
+  const count = Object.values(d.prayers).filter(Boolean).length;
+  document.getElementById('prayerCount').textContent = `${count}/5`;
+  document.getElementById('prayerSubtitle').textContent =
+    count === 0 ? '0 van 5 verricht' :
+    count === 5 ? 'Alle gebeden verricht ✓' : `${count} van 5 verricht`;
+  document.getElementById('cardGebeden').classList.toggle('done', count === 5);
+}
 
-laylahDialog.addEventListener("click", (e) => {
-  const rect = laylahDialog.getBoundingClientRect();
-  const inside =
-    rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
-    rect.left <= e.clientX && e.clientX <= rect.left + rect.width;
-  if (!inside) laylahDialog.close();
+function updateKoranUI(d) {
+  document.getElementById('koranSubtitle').textContent =
+    d.koran === 0 ? 'Pagina\'s vandaag' :
+    `${d.koran} pagina${d.koran !== 1 ? "'s" : ''} vandaag`;
+  document.getElementById('cardKoran').classList.toggle('done', d.koran > 0);
+}
+
+function updateSadaqahUI(d) {
+  document.getElementById('sadaqahSubtitle').textContent =
+    d.sadaqah ? 'Gegeven — moge Allah het aanvaarden ✓' : 'Nog niet gegeven';
+  document.getElementById('cardSadaqah').classList.toggle('done', d.sadaqah);
+}
+
+function updateNachtUI(d) {
+  document.getElementById('nachtSubtitle').textContent =
+    d.nacht ? 'Tarāwīḥ / Tahajjud verricht ✓' : 'Tarāwīḥ / Tahajjud — Nog niet verricht';
+  document.getElementById('cardNacht').classList.toggle('done', d.nacht);
+}
+
+function updateExtraUI(d) {
+  const count = Object.values(d.extra).filter(Boolean).length;
+  document.getElementById('cardExtra').classList.toggle('done', count > 0);
+}
+
+function updateProgress(d) {
+  const pct = calcProgress(d);
+  const circumference = 2 * Math.PI * 51;
+  document.getElementById('progressRing').style.strokeDashoffset = circumference - (pct / 100) * circumference;
+  document.getElementById('progressRing').style.strokeDasharray = circumference;
+  document.getElementById('progressPercent').textContent = `${pct}%`;
+  document.getElementById('progressDescription').textContent =
+    pct === 0   ? 'Begin vandaag — elke ʿibādah telt' :
+    pct < 50    ? 'Goed bezig, ga door!' :
+    pct < 100   ? 'Bijna voltooid, houd vol!' :
+                  'Masha\'Allah — dag voltooid! 🤲';
+}
+
+// ─── Modal ────────────────────────────────────────────────────
+const modal = document.getElementById('qadrModal');
+
+function openModal() {
+  modal.classList.add('open');
+  document.getElementById('modalClose').focus();
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  modal.classList.remove('open');
+  document.getElementById('qadrBadge').focus();
+  document.body.style.overflow = '';
+}
+
+// ─── Toast ────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// ─── Event listeners ─────────────────────────────────────────
+document.querySelectorAll('[data-prayer]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const d = getDayData(currentDay);
+    d.prayers[cb.dataset.prayer] = cb.checked;
+    updatePrayerUI(d);
+    updateProgress(d);
+    buildDayNav();
+  });
 });
 
-// ---- Event listeners: activiteiten ----
-quranMinusBtn.addEventListener("click", () => {
-  const today = getTodayDay();
-  if (!today) return;
-  const data = getDayData(appData, today);
-  if (data.quranPages > 0) {
-    data.quranPages--;
-    appData[today] = data;
-    saveData(appData);
-    renderAll();
+document.getElementById('koranMinus').addEventListener('click', () => {
+  const d = getDayData(currentDay);
+  if (d.koran > 0) {
+    d.koran--;
+    document.getElementById('koranValue').textContent = d.koran;
+    updateKoranUI(d);
+    updateProgress(d);
+    buildDayNav();
   }
 });
 
-quranPlusBtn.addEventListener("click", () => {
-  const today = getTodayDay();
-  if (!today) return;
-  const data = getDayData(appData, today);
-  data.quranPages++;
-  appData[today] = data;
-  saveData(appData);
-  renderAll();
+document.getElementById('koranPlus').addEventListener('click', () => {
+  const d = getDayData(currentDay);
+  d.koran++;
+  document.getElementById('koranValue').textContent = d.koran;
+  updateKoranUI(d);
+  updateProgress(d);
+  buildDayNav();
 });
 
-sadaqahBtn.addEventListener("click", () => {
-  const today = getTodayDay();
-  if (!today) return;
-  const data = getDayData(appData, today);
-  data.sadaqah = !data.sadaqah;
-  appData[today] = data;
-  saveData(appData);
-  renderAll();
+document.getElementById('sadaqahToggle').addEventListener('change', (e) => {
+  const d = getDayData(currentDay);
+  d.sadaqah = e.target.checked;
+  e.target.setAttribute('aria-checked', d.sadaqah);
+  updateSadaqahUI(d);
+  updateProgress(d);
+  buildDayNav();
 });
 
-tahajjudBtn.addEventListener("click", () => {
-  const today = getTodayDay();
-  if (!today) return;
-  const data = getDayData(appData, today);
-  data.tahajjud = !data.tahajjud;
-  appData[today] = data;
-  saveData(appData);
-  renderAll();
+document.getElementById('nachtToggle').addEventListener('change', (e) => {
+  const d = getDayData(currentDay);
+  d.nacht = e.target.checked;
+  e.target.setAttribute('aria-checked', d.nacht);
+  updateNachtUI(d);
+  updateProgress(d);
+  buildDayNav();
 });
 
-// ---- Analytics ----
-function trackEvent(path, title) {
-  if (window.goatcounter?.count) {
-    window.goatcounter.count({ path, title, event: true });
-  }
-}
+document.querySelectorAll('[data-extra]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const d = getDayData(currentDay);
+    d.extra[cb.dataset.extra] = cb.checked;
+    updateExtraUI(d);
+  });
+});
 
-// ---- Init ----
-function init() {
-  trackEvent("de-waardevolle-tien/geopend", "De Waardevolle Tien geopend");
-  renderAll();
-}
+document.getElementById('saveBtn').addEventListener('click', () => {
+  saveData();
+  showToast('✓ Dag opgeslagen');
+});
 
-init();
+document.getElementById('qadrBadge').addEventListener('click', () => openModal());
+document.getElementById('modalClose').addEventListener('click', () => closeModal());
+modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+});
+
+// ─── Logo fallback ───────────────────────────────────────────
+const logoImg = document.getElementById('hrpcLogo');
+logoImg.addEventListener('error', () => {
+  logoImg.classList.add('broken');
+  const fallback = document.createElement('span');
+  fallback.className = 'logo-fallback';
+  fallback.textContent = 'Het Rechte Pad College';
+  logoImg.parentNode.appendChild(fallback);
+});
+
+// ─── Init ────────────────────────────────────────────────────
+initDateSetting();
+updateRamadanStatus();
+buildDayNav();
+renderDay();
