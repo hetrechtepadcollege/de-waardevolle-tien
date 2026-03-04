@@ -56,7 +56,7 @@ function formatDateNL(date) {
 function getDayData(day) {
   if (!data[day]) {
     data[day] = {
-      prayers: { fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false },
+      prayers: { fajr: false, zuhr: false, asr: false, maghrib: false, isha: false },
       koran: 0,
       sadaqah: false,
       nacht: false,
@@ -69,7 +69,7 @@ function getDayData(day) {
 function calcProgress(dayObj) {
   // 25 punten totaal: elk gebed = 1 pt (4%), koran/sadaqah/nacht/extra elk 5 pt (20%)
   const p = dayObj.prayers;
-  const prayersDone = ['fajr','dhuhr','asr','maghrib','isha'].filter(k => p[k]).length;
+  const prayersDone = ['fajr','zuhr','asr','maghrib','isha'].filter(k => p[k]).length;
   let done = prayersDone;
   if (dayObj.koran > 0) done += 5;
   if (dayObj.sadaqah) done += 5;
