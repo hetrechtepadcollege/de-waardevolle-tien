@@ -67,14 +67,15 @@ function getDayData(day) {
 }
 
 function calcProgress(dayObj) {
-  let done = 0; // 5 gelijke vensters, elk 20%
+  // 25 punten totaal: elk gebed = 1 pt (4%), koran/sadaqah/nacht/extra elk 5 pt (20%)
   const p = dayObj.prayers;
-  if (['fajr','dhuhr','asr','maghrib','isha'].every(k => p[k])) done++;
-  if (dayObj.koran > 0) done++;
-  if (dayObj.sadaqah) done++;
-  if (dayObj.nacht) done++;
-  if (Object.values(dayObj.extra).some(Boolean)) done++;
-  return Math.round((done / 5) * 100);
+  const prayersDone = ['fajr','dhuhr','asr','maghrib','isha'].filter(k => p[k]).length;
+  let done = prayersDone;
+  if (dayObj.koran > 0) done += 5;
+  if (dayObj.sadaqah) done += 5;
+  if (dayObj.nacht) done += 5;
+  if (Object.values(dayObj.extra).some(Boolean)) done += 5;
+  return Math.round((done / 25) * 100);
 }
 
 // ─── Ramadan status ──────────────────────────────────────────
