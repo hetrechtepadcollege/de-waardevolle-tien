@@ -69,7 +69,7 @@ function getDayData(day) {
 function calcProgress(dayObj) {
   let done = 0; // 5 gelijke vensters, elk 20%
   const p = dayObj.prayers;
-  if (['Fajr','Ẓuhr','ʿAṣr','Maghrib','ʿIshāʾ'].every(k => p[k])) done++;
+  if (['fajr','dhuhr','asr','maghrib','isha'].every(k => p[k])) done++;
   if (dayObj.koran > 0) done++;
   if (dayObj.sadaqah) done++;
   if (dayObj.nacht) done++;
