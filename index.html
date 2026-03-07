@@ -68,21 +68,21 @@
               <div class="card-subtitle" id="dateSettingSubtitle">Eerste dag van Ramadan</div>
             </div>
           </div>
-          <span id="dateSettingChevron" style="color:var(--text-subtle); font-size:0.9rem; transition:var(--transition);">▾</span>
+          <span id="dateSettingChevron" style="color:var(--ink-subtle); font-size:0.9rem; transition:var(--transition);">▾</span>
         </div>
-        <div id="dateSettingBody" style="display:none; margin-top:16px; padding-top:16px; border-top:1px solid var(--night-border);">
-          <label style="font-size:0.82rem; color:var(--text-muted); display:block; margin-bottom:8px;">
+        <div id="dateSettingBody" style="display:none; margin-top:16px; padding-top:16px; border-top:1px solid rgba(28,18,8,0.12);">
+          <label style="font-size:0.82rem; color:var(--ink-muted); display:block; margin-bottom:8px;">
             Eerste dag van Ramadan (dag 1) — de laatste 10 nachten worden automatisch berekend
           </label>
           <div style="display:flex; gap:8px; align-items:center;">
             <input
               type="date"
               id="ramadanStartInput"
-              style="flex:1; padding:10px 14px; border-radius:var(--radius-sm); border:1.5px solid var(--night-border); background:var(--night); color:var(--text-primary); font-family:'DM Sans',sans-serif; font-size:0.9rem; outline:none; transition:var(--transition);"
+              style="flex:1; padding:10px 14px; border-radius:var(--radius-sm); border:1.5px solid rgba(28,18,8,0.2); background:rgba(212,175,55,0.05); color:var(--ink); font-family:'Noto Sans',sans-serif; font-size:0.9rem; outline:none; transition:var(--transition);"
             />
-            <button id="applyDateBtn" style="padding:10px 16px; border-radius:var(--radius-sm); border:1px solid rgba(184,134,11,0.4); background:var(--gold-dim); color:var(--gold); font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:500; cursor:pointer; transition:var(--transition); white-space:nowrap;">Toepassen</button>
+            <button id="applyDateBtn" style="padding:10px 16px; border-radius:var(--radius-sm); border:1px solid rgba(212,175,55,0.45); background:rgba(212,175,55,0.18); color:var(--ink); font-family:'Noto Sans',sans-serif; font-size:0.85rem; font-weight:500; cursor:pointer; transition:var(--transition); white-space:nowrap;">Toepassen</button>
           </div>
-          <p style="font-size:0.75rem; color:var(--text-subtle); margin-top:8px;">
+          <p style="font-size:0.75rem; color:var(--ink-subtle); margin-top:8px;">
             De datums in het overzicht worden automatisch bijgewerkt.
           </p>
         </div>
@@ -94,12 +94,12 @@
       <div class="section-label-icon" aria-hidden="true">🗓️</div>
       <div class="section-label-text">De Laatste Tien Dagen</div>
     </div>
-    <p style="font-size:0.78rem; color:var(--text-muted); padding:0 16px; margin-bottom:10px;">Tik op een ✦-nacht voor info over Laylatul Qadr</p>
-    <p id="dayNavMonth" style="font-size:0.78rem; font-weight:600; color:var(--text-muted); padding:0 16px; margin-bottom:8px; letter-spacing:0.04em; display:none;"></p>
+    <p style="font-size:0.78rem; color:var(--on-dark-muted); padding:0 16px; margin-bottom:10px;">Tik op een ✦-nacht voor info over Laylatul Qadr</p>
+    <p id="dayNavMonth" style="font-size:0.78rem; font-weight:600; color:var(--on-dark-muted); padding:0 16px; margin-bottom:8px; letter-spacing:0.04em; display:none;"></p>
     <nav class="day-nav" aria-label="Navigeer tussen de 10 nachten">
       <div class="day-nav-inner" id="dayNav" role="list"></div>
     </nav>
-    <p style="font-size:0.75rem; color:var(--text-muted); padding:6px 16px 0; display:flex; align-items:center; gap:5px;">
+    <p style="font-size:0.75rem; color:var(--on-dark-muted); padding:6px 16px 0; display:flex; align-items:center; gap:5px;">
       <span style="color:var(--gold)">✦</span> = Mogelijk Laylatul Qadr (oneven nacht)
     </p>
 
@@ -266,8 +266,8 @@
       <blockquote class="modal-verse">
         "De Nacht van Qadr is beter dan duizend maanden." <cite>(Koran 97:3)</cite>
       </blockquote>
-      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">Dit is een oneven nacht in de laatste 10 dagen van Ramadan — een van de nachten waarop Laylatul Qadr kan vallen.</p>
-      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">Benut deze nacht met extra ʿibādah:</p>
+      <p style="font-size:0.85rem; color:var(--ink-muted); margin-bottom:10px;">Dit is een oneven nacht in de laatste 10 dagen van Ramadan — een van de nachten waarop Laylatul Qadr kan vallen.</p>
+      <p style="font-size:0.85rem; color:var(--ink-muted); margin-bottom:14px;">Benut deze nacht met extra ʿibādah:</p>
       <ul class="modal-list" aria-label="Aanbevolen erediensten">
         <li><span>🌟</span><span>Extra (nacht)gebeden — Tarāwīḥ / Tahajjud / Qaḍā</span></li>
         <li><span>📖</span><span>Meer Koranrecitatie</span></li>
