@@ -385,6 +385,9 @@ body::after {
 }
 
 .current-day-title .qadr-badge {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  color-scheme: light;
   font-size: 0.72rem;
   font-family: 'Noto Sans', sans-serif;
   font-weight: 600;
@@ -606,12 +609,18 @@ body::after {
   border-radius: var(--radius-sm);
   overflow: hidden;
   flex-shrink: 0;
+  background: var(--card);
 }
 
 .stepper-btn {
+  /* Prevent Dark Mode from overriding with native dark button style */
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  color-scheme: light;
+
   width: 36px;
   height: 36px;
-  background: rgba(212,175,55,0.06);
+  background: rgba(212,175,55,0.08);
   border: none;
   color: var(--ink-muted);
   font-size: 1.1rem;
@@ -708,6 +717,9 @@ body::after {
 .cta-section { padding: 24px 16px 0; }
 
 .save-btn {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  color-scheme: light;
   width: 100%;
   padding: 16px;
   border-radius: var(--radius-md);
@@ -921,6 +933,9 @@ body::after {
 }
 
 .modal-close {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  color-scheme: light;
   width: 100%;
   margin-top: 24px;
   padding: 14px;
