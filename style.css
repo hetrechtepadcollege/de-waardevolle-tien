@@ -356,9 +356,11 @@ body::after {
 .day-btn.active .day-weekday { color: var(--gold); }
 
 .qadr-star {
-  font-size: 9px;
+  font-size: 13px;
   color: var(--gold);
-  margin-top: 1px;
+  margin-top: 2px;
+  text-shadow: 0 0 6px rgba(212,175,55,0.7);
+  line-height: 1;
 }
 
 /* ─── Current day header ────────────────────────────────────── */
@@ -754,21 +756,31 @@ body::after {
 
 /* ─── Footer ─────────────────────────────────────────────────── */
 .app-footer {
-  padding: 24px 24px 16px;
+  padding: 8px 24px 32px;
   text-align: center;
 }
 
 .back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8rem;
-  color: var(--on-dark-subtle);
+  display: inline-block;
   text-decoration: none;
+  text-align: center;
+  color: var(--gold);
+  background: rgba(212,175,55,0.10);
+  border: 1px solid rgba(212,175,55,0.22);
+  font-family: 'Noto Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 10px 28px;
+  border-radius: var(--radius-sm);
   transition: var(--transition);
 }
 
-.back-link:hover { color: var(--on-dark-muted); }
+.back-link:hover {
+  color: var(--gold-light);
+  background: rgba(212,175,55,0.18);
+  border-color: rgba(212,175,55,0.45);
+  transform: translateY(-1px);
+}
 
 /* ─── Modal ──────────────────────────────────────────────────── */
 .modal-backdrop {
