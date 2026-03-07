@@ -1,22 +1,27 @@
 /* ─── Design Tokens ─────────────────────────────────────────── */
 :root {
-  --night:        #f5f0e8;
-  --night-mid:    #ede7d9;
-  --night-card:   #ffffff;
-  --night-border: rgba(0,0,0,0.08);
-  --gold:         #b8860b;
-  --gold-light:   #9a6f0a;
-  --gold-dim:     rgba(184,134,11,0.12);
-  --gold-glow:    rgba(184,134,11,0.06);
-  --text-primary: #1a1612;
-  --text-muted:   rgba(26,22,18,0.55);
-  --text-subtle:  rgba(26,22,18,0.35);
-  --success:      #2d7a3a;
-  --success-dim:  rgba(45,122,58,0.1);
-  --radius-sm:    10px;
-  --radius-md:    16px;
-  --radius-lg:    24px;
-  --transition:   0.25s cubic-bezier(0.4,0,0.2,1);
+  --bg:              #0b1535;
+  --bg-deep:         #07102a;
+  --card:            #fdfbf0;
+  --card-warm:       #f5ede8;
+  --card-border:     rgba(212,175,55,0.38);
+  --card-border-dim: rgba(212,175,55,0.18);
+  --gold:            #d4af37;
+  --gold-light:      #e8c84a;
+  --gold-dim:        rgba(212,175,55,0.18);
+  --gold-glow:       rgba(212,175,55,0.08);
+  --ink:             #1c1208;
+  --ink-muted:       rgba(28,18,8,0.6);
+  --ink-subtle:      rgba(28,18,8,0.38);
+  --on-dark:         rgba(255,255,255,0.92);
+  --on-dark-muted:   rgba(255,255,255,0.62);
+  --on-dark-subtle:  rgba(255,255,255,0.38);
+  --success:         #2d7a3a;
+  --success-dim:     rgba(45,122,58,0.12);
+  --radius-sm:       10px;
+  --radius-md:       16px;
+  --radius-lg:       24px;
+  --transition:      0.25s cubic-bezier(0.4,0,0.2,1);
 }
 
 /* ─── Reset & Base ──────────────────────────────────────────── */
@@ -25,35 +30,41 @@
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
 body {
-  font-family: 'DM Sans', sans-serif;
-  background-color: var(--night);
-  color: var(--text-primary);
+  font-family: 'Noto Sans', sans-serif;
+  background-color: var(--bg-deep);
+  color: var(--on-dark);
   min-height: 100dvh;
   overflow-x: hidden;
   position: relative;
 }
 
-/* ─── Background atmosphere ─────────────────────────────────── */
+/* ─── Starfield background ──────────────────────────────────── */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(184,134,11,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(184,134,11,0.04) 0%, transparent 60%);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.55) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,0.35) 1px, transparent 1px),
+    radial-gradient(circle, rgba(212,175,55,0.5)   1px, transparent 1px);
+  background-size:    150px 120px, 90px 80px, 220px 180px;
+  background-position: 20px 30px, 55px 15px, 100px 70px;
   pointer-events: none;
   z-index: 0;
 }
 
+/* Gold atmospheric glow */
 body::after {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(184,134,11,0.1) 1px, transparent 1px);
-  background-size: 48px 48px;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% -5%, rgba(212,175,55,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 15%, rgba(100,120,200,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 30% at 10% 80%, rgba(212,175,55,0.06) 0%, transparent 55%);
   pointer-events: none;
   z-index: 0;
-  mask-image: radial-gradient(ellipse 100% 100% at 50% 0%, black 20%, transparent 80%);
 }
 
 /* ─── Layout ────────────────────────────────────────────────── */
@@ -68,64 +79,76 @@ body::after {
 /* ─── Header ────────────────────────────────────────────────── */
 .app-header {
   text-align: center;
-  padding: 48px 24px 32px;
+  padding: 48px 24px 36px;
 }
 
 .logo-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .logo-wrap img {
-  height: 88px;
+  height: 72px;
   width: auto;
-  max-width: 280px;
+  max-width: 260px;
   object-fit: contain;
 }
 
 .logo-wrap img.broken { display: none; }
 
 .logo-wrap .logo-fallback {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Noto Sans', sans-serif;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--on-dark-muted);
+}
+
+/* Decorative crescent moon */
+.moon-decoration {
+  font-size: 3.2rem;
+  line-height: 1;
+  margin-bottom: 16px;
+  display: block;
+  filter: drop-shadow(0 0 12px rgba(212,175,55,0.5));
+  animation: moonGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes moonGlow {
+  from { filter: drop-shadow(0 0 8px  rgba(212,175,55,0.35)); }
+  to   { filter: drop-shadow(0 0 20px rgba(212,175,55,0.65)); }
 }
 
 .app-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(2.2rem, 8vw, 3rem);
-  font-weight: 300;
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.8rem, 7.5vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   line-height: 1.1;
-  color: var(--text-primary);
-  margin-bottom: 10px;
-  letter-spacing: -0.01em;
-}
-
-.app-title em {
-  font-style: italic;
-  color: var(--gold-light);
+  color: var(--gold);
+  margin-bottom: 12px;
+  text-shadow: 0 0 30px rgba(212,175,55,0.3);
 }
 
 .app-subtitle {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1rem;
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 0.9rem;
   font-style: italic;
-  color: var(--text-muted);
-  line-height: 1.6;
+  color: var(--on-dark-muted);
+  line-height: 1.65;
   max-width: 300px;
   margin: 0 auto 4px;
   text-align: center;
 }
 
 .hadith-source {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Noto Sans', sans-serif;
   font-size: 0.78rem;
-  color: var(--text-subtle);
+  color: var(--on-dark-subtle);
   margin-top: 4px;
   margin-bottom: 24px;
 }
@@ -146,18 +169,17 @@ body::after {
 /* ─── Countdown block ───────────────────────────────────────── */
 .countdown-block {
   margin: 14px 0 0;
-  background: var(--night-card);
-  border: 1px solid var(--night-border);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(212,175,55,0.25);
   border-radius: var(--radius-md);
   padding: 14px 18px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
 .countdown-text {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.05rem;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--on-dark);
   margin-bottom: 6px;
 }
 
@@ -165,7 +187,7 @@ body::after {
 
 .app-description {
   font-size: 0.82rem;
-  color: var(--text-muted);
+  color: var(--on-dark-muted);
   line-height: 1.6;
 }
 
@@ -188,7 +210,7 @@ body::after {
 
 .progress-ring-track {
   fill: none;
-  stroke: var(--night-card);
+  stroke: rgba(255,255,255,0.08);
   stroke-width: 6;
 }
 
@@ -212,16 +234,17 @@ body::after {
 }
 
 .progress-percent {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Cinzel', serif;
   font-size: 1.8rem;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--gold);
   line-height: 1;
+  text-shadow: 0 0 16px rgba(212,175,55,0.4);
 }
 
 .progress-label {
   font-size: 10px;
-  color: var(--text-subtle);
+  color: var(--on-dark-subtle);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-top: 2px;
@@ -229,11 +252,11 @@ body::after {
 
 .progress-description {
   font-size: 0.82rem;
-  color: var(--text-muted);
+  color: var(--on-dark-muted);
   text-align: center;
 }
 
-/* ─── Day Navigation ────────────────────────────────────────── */
+/* ─── Section labels ────────────────────────────────────────── */
 .section-label {
   display: flex;
   align-items: center;
@@ -247,7 +270,7 @@ body::after {
   height: 38px;
   border-radius: var(--radius-sm);
   background: var(--gold-glow);
-  border: 1px solid rgba(184,134,11,0.15);
+  border: 1px solid rgba(212,175,55,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -256,13 +279,14 @@ body::after {
 }
 
 .section-label-text {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.05rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  line-height: 1.2;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--gold);
 }
 
+/* ─── Day Navigation ────────────────────────────────────────── */
 .day-nav {
   padding: 0 16px;
   margin-bottom: 8px;
@@ -282,22 +306,23 @@ body::after {
   gap: 2px;
   padding: 10px 6px 8px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--night-border);
-  background: var(--night-card);
+  border: 1px solid rgba(212,175,55,0.2);
+  background: rgba(255,255,255,0.04);
   cursor: pointer;
   transition: var(--transition);
   position: relative;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  color: var(--on-dark);
 }
 
 .day-btn:hover {
-  border-color: rgba(184,134,11,0.4);
-  background: rgba(184,134,11,0.05);
+  border-color: rgba(212,175,55,0.5);
+  background: rgba(212,175,55,0.08);
 }
 
 .day-btn.active {
   border-color: var(--gold);
-  background: var(--gold-dim);
+  background: rgba(212,175,55,0.14);
+  box-shadow: 0 0 10px rgba(212,175,55,0.2);
 }
 
 .day-btn.completed::after {
@@ -308,14 +333,14 @@ body::after {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--success);
+  background: var(--gold);
 }
 
 .day-date {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.25rem;
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--on-dark);
   line-height: 1;
 }
 
@@ -323,7 +348,7 @@ body::after {
 
 .day-weekday {
   font-size: 9px;
-  color: var(--text-subtle);
+  color: var(--on-dark-subtle);
   letter-spacing: 0.04em;
   text-transform: lowercase;
 }
@@ -343,31 +368,32 @@ body::after {
 }
 
 .current-day-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.5rem;
-  font-weight: 400;
-  color: var(--text-primary);
+  font-family: 'Cinzel', serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--on-dark);
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
 .current-day-title .qadr-badge {
-  font-size: 0.75rem;
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 500;
-  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-family: 'Noto Sans', sans-serif;
+  font-weight: 600;
+  padding: 4px 10px;
   border-radius: 99px;
-  background: var(--gold-dim);
+  background: rgba(212,175,55,0.15);
   color: var(--gold);
-  border: 1px solid rgba(184,134,11,0.3);
+  border: 1px solid rgba(212,175,55,0.4);
   cursor: pointer;
   transition: var(--transition);
+  letter-spacing: 0.04em;
 }
 
-.current-day-title .qadr-badge:hover { background: rgba(184,134,11,0.2); }
+.current-day-title .qadr-badge:hover { background: rgba(212,175,55,0.25); }
 
-/* ─── Cards (ibadah items) ──────────────────────────────────── */
+/* ─── Ibadah Cards ──────────────────────────────────────────── */
 .cards-section {
   padding: 0 16px;
   display: flex;
@@ -376,13 +402,14 @@ body::after {
 }
 
 .ibadah-card {
-  background: var(--night-card);
-  border: 1px solid var(--night-border);
+  background: var(--card);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius-md);
   padding: 18px 20px;
   transition: var(--transition);
   position: relative;
   overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25), 0 0 0 0 rgba(212,175,55,0);
 }
 
 .ibadah-card::before {
@@ -392,7 +419,7 @@ body::after {
   top: 0;
   bottom: 0;
   width: 3px;
-  background: var(--gold);
+  background: linear-gradient(180deg, var(--gold) 0%, var(--gold-light) 100%);
   opacity: 0;
   transition: var(--transition);
   border-radius: 0 2px 2px 0;
@@ -401,8 +428,9 @@ body::after {
 .ibadah-card.done::before { opacity: 1; }
 
 .ibadah-card.done {
-  border-color: rgba(184,134,11,0.2);
-  background: linear-gradient(135deg, rgba(184,134,11,0.04) 0%, var(--night-card) 100%);
+  border-color: rgba(212,175,55,0.5);
+  background: linear-gradient(135deg, #fffdf0 0%, var(--card) 60%);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2), 0 0 16px rgba(212,175,55,0.1);
 }
 
 .card-top {
@@ -424,8 +452,8 @@ body::after {
   width: 38px;
   height: 38px;
   border-radius: var(--radius-sm);
-  background: var(--gold-glow);
-  border: 1px solid rgba(184,134,11,0.15);
+  background: rgba(212,175,55,0.1);
+  border: 1px solid rgba(212,175,55,0.25);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -435,23 +463,24 @@ body::after {
 }
 
 .ibadah-card.done .card-icon {
-  background: var(--gold-dim);
-  border-color: rgba(184,134,11,0.35);
+  background: rgba(212,175,55,0.2);
+  border-color: rgba(212,175,55,0.5);
 }
 
 .card-info { min-width: 0; }
 
 .card-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.05rem;
-  font-weight: 500;
-  color: var(--text-primary);
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
   line-height: 1.2;
+  letter-spacing: 0.01em;
 }
 
 .card-subtitle {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--ink-muted);
   margin-top: 2px;
 }
 
@@ -479,8 +508,8 @@ body::after {
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  border: 1.5px solid var(--night-border);
-  background: rgba(255,255,255,0.03);
+  border: 1.5px solid rgba(28,18,8,0.2);
+  background: rgba(212,175,55,0.04);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -490,26 +519,31 @@ body::after {
 }
 
 .prayer-check input:checked + .prayer-box {
-  background: var(--gold-dim);
+  background: rgba(212,175,55,0.2);
   border-color: var(--gold);
   color: var(--gold);
 }
 
 .prayer-name {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  letter-spacing: 0.05em;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  letter-spacing: 0.03em;
   text-align: center;
 }
 
-.prayer-check input:checked ~ .prayer-name { color: var(--gold); }
+.prayer-check input:checked ~ .prayer-name {
+  color: var(--ink);
+  font-weight: 600;
+}
 
 .prayers-count {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--ink-muted);
   margin-left: auto;
   align-self: center;
   flex-shrink: 0;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
 }
 
 /* ─── Toggle ────────────────────────────────────────────────── */
@@ -517,8 +551,8 @@ body::after {
   width: 52px;
   height: 28px;
   border-radius: 99px;
-  border: 1.5px solid var(--night-border);
-  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(28,18,8,0.2);
+  background: rgba(28,18,8,0.06);
   cursor: pointer;
   position: relative;
   z-index: 0;
@@ -536,25 +570,25 @@ body::after {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--text-subtle);
+  background: var(--ink-subtle);
   transition: var(--transition);
 }
 
 .toggle-btn:checked {
-  background: var(--gold-dim);
+  background: rgba(212,175,55,0.2);
   border-color: var(--gold);
 }
 
 .toggle-btn:checked::after {
   left: calc(100% - 21px);
-  background: var(--gold-light);
+  background: var(--gold);
 }
 
 /* ─── Stepper (Koran) ───────────────────────────────────────── */
 .stepper {
   display: flex;
   align-items: center;
-  border: 1.5px solid var(--night-border);
+  border: 1.5px solid rgba(28,18,8,0.2);
   border-radius: var(--radius-sm);
   overflow: hidden;
   flex-shrink: 0;
@@ -563,9 +597,9 @@ body::after {
 .stepper-btn {
   width: 36px;
   height: 36px;
-  background: rgba(255,255,255,0.04);
+  background: rgba(212,175,55,0.06);
   border: none;
-  color: var(--text-muted);
+  color: var(--ink-muted);
   font-size: 1.1rem;
   cursor: pointer;
   transition: var(--transition);
@@ -574,17 +608,17 @@ body::after {
   justify-content: center;
 }
 
-.stepper-btn:hover { background: var(--gold-dim); color: var(--gold); }
+.stepper-btn:hover { background: rgba(212,175,55,0.2); color: var(--ink); }
 .stepper-btn:active { transform: scale(0.92); }
 
 .stepper-value {
   min-width: 44px;
   text-align: center;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Cinzel', serif;
   font-size: 1.2rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  background: rgba(255,255,255,0.02);
+  font-weight: 600;
+  color: var(--ink);
+  background: transparent;
   padding: 0 4px;
   line-height: 36px;
 }
@@ -610,7 +644,7 @@ body::after {
   width: 20px;
   height: 20px;
   border-radius: 5px;
-  border: 1.5px solid var(--night-border);
+  border: 1.5px solid rgba(28,18,8,0.2);
   background: transparent;
   flex-shrink: 0;
   display: flex;
@@ -622,54 +656,105 @@ body::after {
 }
 
 .extra-item input:checked + .extra-check-box {
-  background: var(--gold-dim);
+  background: rgba(212,175,55,0.2);
   border-color: var(--gold);
   color: var(--gold);
 }
 
 .extra-label {
   font-size: 0.88rem;
-  color: var(--text-muted);
+  color: var(--ink-muted);
   transition: var(--transition);
 }
 
-.extra-item input:checked ~ .extra-label { color: var(--text-primary); }
+.extra-item input:checked ~ .extra-label {
+  color: var(--ink);
+  font-weight: 500;
+}
 
-/* ─── Bottom CTA ────────────────────────────────────────────── */
+/* ─── Date setting card ─────────────────────────────────────── */
+/* Override inline styles for date setting card */
+#dateSettingBody {
+  border-top-color: rgba(28,18,8,0.12) !important;
+}
+
+#ramadanStartInput {
+  background: rgba(212,175,55,0.05) !important;
+  border-color: rgba(28,18,8,0.2) !important;
+  color: var(--ink) !important;
+}
+
+#applyDateBtn {
+  background: rgba(212,175,55,0.18) !important;
+  border-color: rgba(212,175,55,0.45) !important;
+  color: var(--ink) !important;
+}
+
+/* ─── Save CTA ──────────────────────────────────────────────── */
 .cta-section { padding: 24px 16px 0; }
 
 .save-btn {
   width: 100%;
   padding: 16px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(184,134,11,0.4);
-  background: linear-gradient(135deg, rgba(184,134,11,0.12) 0%, rgba(184,134,11,0.06) 100%);
+  border: 1px solid rgba(212,175,55,0.5);
+  background: linear-gradient(135deg, rgba(212,175,55,0.18) 0%, rgba(212,175,55,0.08) 100%);
   color: var(--gold);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Cinzel', serif;
   font-size: 0.95rem;
-  font-weight: 500;
-  letter-spacing: 0.03em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   cursor: pointer;
   transition: var(--transition);
   position: relative;
   overflow: hidden;
 }
 
-.save-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(184,134,11,0.18) 0%, rgba(184,134,11,0.1) 100%);
-  opacity: 0;
-  transition: var(--transition);
+.save-btn:hover {
+  background: linear-gradient(135deg, rgba(212,175,55,0.28) 0%, rgba(212,175,55,0.15) 100%);
+  box-shadow: 0 0 20px rgba(212,175,55,0.2);
 }
 
-.save-btn:hover::before { opacity: 1; }
 .save-btn:active { transform: scale(0.98); }
 
-/* ─── Footer ────────────────────────────────────────────────── */
+/* ─── Tagline ────────────────────────────────────────────────── */
+.tagline-section {
+  padding: 32px 24px 8px;
+  text-align: center;
+}
+
+.tagline-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.tagline-divider::before,
+.tagline-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(212,175,55,0.35), transparent);
+  max-width: 80px;
+}
+
+.tagline-divider span { font-size: 1rem; color: var(--gold); }
+
+.tagline-text {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  line-height: 1.7;
+}
+
+/* ─── Footer ─────────────────────────────────────────────────── */
 .app-footer {
-  padding: 32px 24px 16px;
+  padding: 24px 24px 16px;
   text-align: center;
 }
 
@@ -678,18 +763,18 @@ body::after {
   align-items: center;
   gap: 6px;
   font-size: 0.8rem;
-  color: var(--text-subtle);
+  color: var(--on-dark-subtle);
   text-decoration: none;
   transition: var(--transition);
 }
 
-.back-link:hover { color: var(--text-muted); }
+.back-link:hover { color: var(--on-dark-muted); }
 
-/* ─── Modal ─────────────────────────────────────────────────── */
+/* ─── Modal ──────────────────────────────────────────────────── */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.75);
   backdrop-filter: blur(8px);
   z-index: 1000;
   display: flex;
@@ -708,10 +793,10 @@ body::after {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  background: #ffffff;
+  background: var(--card);
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
-  border-top: 1px solid rgba(184,134,11,0.2);
+  border-top: 1px solid rgba(212,175,55,0.3);
   padding: 32px 24px 48px;
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
@@ -725,7 +810,7 @@ body::after {
   width: 36px;
   height: 4px;
   border-radius: 99px;
-  background: rgba(0,0,0,0.12);
+  background: rgba(28,18,8,0.15);
   margin: 0 auto 24px;
 }
 
@@ -733,12 +818,14 @@ body::after {
   font-size: 2rem;
   text-align: center;
   margin-bottom: 8px;
+  filter: drop-shadow(0 0 8px rgba(212,175,55,0.5));
 }
 
 .modal-title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Cinzel', serif;
   font-size: 1.6rem;
-  font-weight: 400;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   text-align: center;
   color: var(--gold);
   margin-bottom: 6px;
@@ -750,18 +837,16 @@ body::after {
   color: var(--gold);
   direction: rtl;
   margin-bottom: 16px;
-  font-family: 'Cormorant Garamond', serif;
 }
 
 .modal-verse {
-  background: var(--gold-glow);
-  border: 1px solid rgba(184,134,11,0.15);
+  background: rgba(212,175,55,0.08);
+  border: 1px solid rgba(212,175,55,0.2);
   border-radius: var(--radius-sm);
   padding: 14px 16px;
-  font-family: 'Cormorant Garamond', serif;
   font-style: italic;
   font-size: 1rem;
-  color: var(--text-muted);
+  color: var(--ink-muted);
   text-align: center;
   line-height: 1.6;
   margin-bottom: 20px;
@@ -780,7 +865,7 @@ body::after {
   align-items: center;
   gap: 10px;
   font-size: 0.9rem;
-  color: var(--text-muted);
+  color: var(--ink-muted);
 }
 
 .modal-list li span:first-child { font-size: 1.1rem; }
@@ -794,7 +879,6 @@ body::after {
   font-size: 1.15rem;
   direction: rtl;
   color: var(--gold);
-  font-family: 'Cormorant Garamond', serif;
   display: block;
   margin-bottom: 6px;
 }
@@ -802,14 +886,14 @@ body::after {
 .modal-dua .transliteration {
   font-style: italic;
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: var(--ink-muted);
   display: block;
   margin-bottom: 4px;
 }
 
 .modal-dua .translation {
   font-size: 0.8rem;
-  color: var(--text-subtle);
+  color: var(--ink-subtle);
 }
 
 .modal-close {
@@ -817,30 +901,30 @@ body::after {
   margin-top: 24px;
   padding: 14px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(184,134,11,0.3);
-  background: var(--gold-dim);
+  border: 1px solid rgba(212,175,55,0.4);
+  background: rgba(212,175,55,0.15);
   color: var(--gold);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
 }
 
-.modal-close:hover { background: rgba(184,134,11,0.2); }
+.modal-close:hover { background: rgba(212,175,55,0.25); }
 
-/* ─── Toast ─────────────────────────────────────────────────── */
+/* ─── Toast ──────────────────────────────────────────────────── */
 .toast {
   position: fixed;
   bottom: 32px;
   left: 50%;
   transform: translateX(-50%) translateY(120%);
-  background: #edfaef;
-  border: 1px solid rgba(45,122,58,0.25);
+  background: #0b1535;
+  border: 1px solid rgba(212,175,55,0.4);
   border-radius: var(--radius-sm);
   padding: 12px 20px;
   font-size: 0.85rem;
-  color: var(--success);
+  color: var(--gold);
   white-space: nowrap;
   z-index: 1100;
   transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
@@ -849,27 +933,27 @@ body::after {
 
 .toast.show { transform: translateX(-50%) translateY(0); }
 
-/* ─── Animations ────────────────────────────────────────────── */
+/* ─── Animations ─────────────────────────────────────────────── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.app-header         { animation: fadeUp 0.6s ease both; }
-.progress-section   { animation: fadeUp 0.6s 0.1s ease both; }
-.day-nav            { animation: fadeUp 0.6s 0.15s ease both; }
-.current-day-header { animation: fadeUp 0.6s 0.2s ease both; }
-.cards-section      { animation: fadeUp 0.6s 0.25s ease both; }
-.cta-section        { animation: fadeUp 0.6s 0.3s ease both; }
+.app-header         { animation: fadeUp 0.7s ease both; }
+.progress-section   { animation: fadeUp 0.7s 0.1s ease both; }
+.day-nav            { animation: fadeUp 0.7s 0.15s ease both; }
+.current-day-header { animation: fadeUp 0.7s 0.2s ease both; }
+.cards-section      { animation: fadeUp 0.7s 0.25s ease both; }
+.cta-section        { animation: fadeUp 0.7s 0.3s ease both; }
 
-/* ─── Focus visible ─────────────────────────────────────────── */
+/* ─── Focus visible ──────────────────────────────────────────── */
 :focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 3px;
   border-radius: 4px;
 }
 
-/* ─── Reduced motion ────────────────────────────────────────── */
+/* ─── Reduced motion ─────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
