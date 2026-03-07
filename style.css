@@ -27,7 +27,12 @@
 /* ─── Reset & Base ──────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  /* Prevent browser auto-dark-mode from inverting form controls */
+  color-scheme: light;
+}
 
 body {
   font-family: 'Noto Sans', sans-serif;
@@ -550,18 +555,24 @@ body::after {
 
 /* ─── Toggle ────────────────────────────────────────────────── */
 .toggle-btn {
+  /* Hard reset — prevents Safari/iOS from rendering native switch */
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  -moz-appearance: none !important;
+  color-scheme: light;
+
+  display: inline-block;
   width: 52px;
   height: 28px;
   border-radius: 99px;
   border: 1.5px solid rgba(28,18,8,0.2);
-  background: rgba(28,18,8,0.06);
+  background: #e8e2d6;
   cursor: pointer;
   position: relative;
-  z-index: 0;
-  transition: var(--transition);
   flex-shrink: 0;
-  -webkit-appearance: none;
-  appearance: none;
+  transition: var(--transition);
+  vertical-align: middle;
+  outline: none;
 }
 
 .toggle-btn::after {
@@ -572,12 +583,13 @@ body::after {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--ink-subtle);
+  background: rgba(28,18,8,0.28);
   transition: var(--transition);
+  pointer-events: none;
 }
 
 .toggle-btn:checked {
-  background: rgba(212,175,55,0.2);
+  background: rgba(212,175,55,0.22);
   border-color: var(--gold);
 }
 
